@@ -48,5 +48,9 @@ Temporary Items
 
 
 #Android studio
-build/
-!app/src
+gradle
+build
+.idea
+.gradle
+app/build
+app/libs
