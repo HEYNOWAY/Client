@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">CST_Project</string>
+    <string name="friendlist">用户</string>
+    <string name="send_button">Send</string>
+</resources>
