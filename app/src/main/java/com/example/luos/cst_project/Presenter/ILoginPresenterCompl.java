@@ -21,7 +21,7 @@ import java.util.List;
  * Created by luos on 2016/6/25.
  */
 
-public class ILoginPresenterCompl implements ILoginPresenter {
+public class ILoginPresenterCompl extends BaseIPresenter implements ILoginPresenter {
     private static LoginActivity loginActivity;
     private NetWork netWork;
 
@@ -35,14 +35,6 @@ public class ILoginPresenterCompl implements ILoginPresenter {
 
     }
 
-    public static void sendEmptyMessage(int what) {
-        Log.d("Test_sendEmptyMessage","start...");
-        loginActivity.sendEmptyMessage(what);
-    }
-
-    public static void sendMessage(Message msg){
-        loginActivity.sendMessage(msg);
-    }
 
     @Override
     public void doLogin(String username, String password) {
@@ -61,8 +53,8 @@ public class ILoginPresenterCompl implements ILoginPresenter {
     }
 
     @Override
-    public void getOffMsg() {
-        netWork.getOffMsg();
+    public void getOffMsg(int userId) {
+        netWork.getOffMsg(LoginActivity.self.getUserID());
     }
 
 

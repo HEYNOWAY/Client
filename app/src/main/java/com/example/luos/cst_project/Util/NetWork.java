@@ -8,14 +8,20 @@ import com.example.luos.cst_project.Model.Config;
 import com.example.luos.cst_project.Model.Contents;
 import com.example.luos.cst_project.Model.DataFrame;
 import com.example.luos.cst_project.Model.User;
+import com.example.luos.cst_project.Presenter.BaseIPresenter;
+import com.example.luos.cst_project.Presenter.IFriendListPresenterCompl;
 import com.example.luos.cst_project.Presenter.ILoginPresenterCompl;
+import com.example.luos.cst_project.Presenter.ReceiveInfoListener;
+import com.example.luos.cst_project.View.BaseActivity;
 import com.example.luos.cst_project.View.FriendListActivity;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 /**
  * Created by luos on 2016/6/25.
@@ -36,6 +42,7 @@ public class NetWork extends Thread {
    private DataFrame.PersonalMsg.Builder personalBuilder = DataFrame.PersonalMsg.newBuilder();
    private static DataFrame.Msg send_msg ;
    private static DataFrame.Msg recive_msg;
+   Vector<ReceiveInfoListener> listeners=new Vector<ReceiveInfoListener>();
 
 
    public synchronized static NetWork getInstance(){
@@ -88,7 +95,11 @@ public class NetWork extends Thread {
                      handlogin();
                      break;
                   case Config.RESULT_GET_FRIENDS:
-                     handgetfriend();
+                     handletfriend();
+                     break;
+                  case Config.RESULT_GET_OFFLINE_MSG:
+                     handleGetOffLineMsg();
+                     break;
                   default:
                      break;
                }
@@ -98,7 +109,8 @@ public class NetWork extends Thread {
             }
    }
 
-    /**
+
+   /**
      *  登陆请求
      * @param username
      * @param password
@@ -107,6 +119,9 @@ public class NetWork extends Thread {
    public boolean login(String username,String password){
 
       try {
+           if(dos==null){
+              return false;
+           }
             Log.d("Test_net_login","excuted login!");
             send_msg = msgBuilder
                     .setUserOpt(Config.REQUEST_LOGIN)
@@ -144,16 +159,11 @@ public class NetWork extends Thread {
             user.setUserName(userName);
             ILoginPresenterCompl.setUser(user);
             Log.d("Test_server_msg","User NickName Id:"+user.getNickName()+user.getUserID());
-            Message message = Message.obtain();
-            Bundle bundle = new Bundle();
-            bundle.putParcelable("User",user);
-            message.setData(bundle);
-            ILoginPresenterCompl.sendEmptyMessage(Config.LOGIN_SUCCESS);
-            ILoginPresenterCompl.sendMessage(message);
+            BaseIPresenter.sendEmptyMessage(Config.LOGIN_SUCCESS);
             getFriends(userId);
 
          } else {
-            ILoginPresenterCompl.sendEmptyMessage(Config.LOGIN_FAILED);
+            BaseIPresenter.sendEmptyMessage(Config.LOGIN_FAILED);
          }
 
    }
@@ -178,11 +188,13 @@ public class NetWork extends Thread {
       }
    }
 
-   public void handgetfriend() {
+   public void handletfriend() {
       if(recive_msg.getOptResult()==true){
          List<DataFrame.User> friends = recive_msg.getFriendsList();
          ILoginPresenterCompl.setFriendList(friends);
          Log.d("Test_handlefriends","recive message optresult...."+ FriendListActivity.friends);
+      } else if(recive_msg.getOptResult()==false){
+         //handle 返回界面处理
       }
    }
 
@@ -216,8 +228,38 @@ public class NetWork extends Thread {
    /**
     * 获取离线消息
     */
-   public void getOffMsg(){
-
+   public void getOffMsg(int userId){
+      try {
+         Log.d("Test_getOffMsg","start...getOffMsg");
+         send_msg = msgBuilder
+                 .setUserOpt(Config.REQUEST_GET_OFFLINE_MSG)
+                 .setUser(
+                         userBuilder.setUserID(userId)
+                 ).build();
+         dos.write(send_msg.toByteArray());
+         Log.d("Test_getOffMsg",send_msg.toString());
+         dos.flush();
+      } catch (IOException e) {
+         e.printStackTrace();
+      }
    }
+
+   private void handleGetOffLineMsg() {
+      Log.d("Test_HandleMsg","strart handleGetOffLineMsg()....");
+      if(recive_msg.getOptResult()==true){
+         List<DataFrame.PersonalMsg> msgList = recive_msg.getPersonalMsgList();
+         ArrayList list = new ArrayList();
+         list.add(msgList);
+         Message message = Message.obtain();
+         Bundle bundle = new Bundle();
+         bundle.putParcelableArrayList("msgList",list);
+         message.what = Config.SEND_NOTIFICATION;
+         message.setData(bundle);
+         BaseIPresenter.sendMessage(message);
+         Log.d("Test_HandleMsg", BaseActivity.getCurrentActivity().toString()+": "+message);
+
+      }
+   }
+
 
 }

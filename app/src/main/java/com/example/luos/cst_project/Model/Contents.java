@@ -6,6 +6,6 @@ package com.example.luos.cst_project.Model;
 
 public class Contents {
 
-    public static final String SERVER_ID = "192.168.1.113";
+    public static final String SERVER_ID = "192.168.1.101";
     public static final int PORT = 6666;
 }

@@ -6,12 +6,14 @@ import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.example.luos.cst_project.Model.Config;
 import com.example.luos.cst_project.Model.DataFrame;
 import com.example.luos.cst_project.Model.User;
 import com.example.luos.cst_project.Presenter.IFriendListPresenterCompl;
 import com.example.luos.cst_project.R;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class FriendListActivity extends BaseActivity implements IFriendListView {
     private FriendListFragment fragment;
@@ -26,9 +28,6 @@ public class FriendListActivity extends BaseActivity implements IFriendListView 
         user = i.getParcelableExtra(LoginActivity.USERDATA);
 
         FragmentManager fm = getSupportFragmentManager();
-        if(friends!=null){
-            Log.d("Test_FriendListActivity",friends.toString());
-        }
         fragment = new FriendListFragment();
         fm.beginTransaction()
                 .add(R.id.activity_friend_list,fragment)
@@ -39,8 +38,18 @@ public class FriendListActivity extends BaseActivity implements IFriendListView 
 
     @Override
     public void processMessage(Message msg) {
-        Log.d("Test_processMessage","FriendsList procemessage()...");
+        Log.d("Test_processMessage","FriendsList procemessage()..."+msg.what);
         switch (msg.what){
+            case Config.SEND_NOTIFICATION:
+                Bundle bundle = msg.getData();
+                ArrayList data = bundle.getParcelableArrayList("msgList");
+                List<DataFrame.PersonalMsg> msgList = (List<DataFrame.PersonalMsg>) data.get(0);
+                Log.d("Test_msgList",msgList.toString());
+                saveMessageToDb(msgList);
+                sendNotifycation(msgList);
+                break;
+            default:
+                break;
 
         }
     }

@@ -13,5 +13,5 @@ public interface ILoginView {
     void onToastResult(int result);
     void onClear();
     void setProgressbarVisible(int visibility);
-    void ToFriendListAcivity(User user, ArrayList<DataFrame.User> friends);
+    void ToFriendListAcivity(ArrayList<DataFrame.User> friends);
 }

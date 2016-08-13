@@ -17,6 +17,7 @@ import com.example.luos.cst_project.Presenter.ILoginPresenterCompl;
 import com.example.luos.cst_project.R;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class LoginActivity extends BaseActivity implements ILoginView,View.OnClickListener{
     private EditText username;
@@ -82,16 +83,22 @@ public class LoginActivity extends BaseActivity implements ILoginView,View.OnCli
 
         switch (msg.what){
             case Config.LOGIN_SUCCESS:
-                loginPresenter.getOffMsg();
+                loginPresenter.getOffMsg(LoginActivity.self.getUserID());
                 setPreference(username_text, password_text);
-                Bundle user_bundle = msg.getData();
-                User user = user_bundle.getParcelable("User");
-                ToFriendListAcivity(user,friendlist);
+                ToFriendListAcivity(friendlist);
                 onToastResult(Config.LOGIN_SUCCESS);
                 break;
             case Config.LOGIN_FAILED:
                 onToastResult(Config.LOGIN_FAILED);
                 break;
+            case Config.SEND_NOTIFICATION:
+                Bundle bundle = msg.getData();
+                Log.d("Test_Bundle",bundle.toString());
+                ArrayList data = bundle.getParcelableArrayList("msgList");
+                List<DataFrame.PersonalMsg> msgList = (List<DataFrame.PersonalMsg>) data.get(0);
+                Log.d("Test_msgList",msgList.toString());
+                saveMessageToDb(msgList);
+                sendNotifycation(msgList);
             default:
                 break;
         }
@@ -127,12 +134,10 @@ public class LoginActivity extends BaseActivity implements ILoginView,View.OnCli
     }
 
     @Override
-    public void ToFriendListAcivity(User user, ArrayList<DataFrame.User> friends) {
+    public void ToFriendListAcivity( ArrayList<DataFrame.User> friends) {
         Intent intent=new Intent(this, FriendListActivity.class);
         startActivity(intent);
-        intent.putExtra(LoginActivity.USERDATA,user);
         intent.putExtra(LoginActivity.FriendList,friends);
-        finish();
     }
 
 }
