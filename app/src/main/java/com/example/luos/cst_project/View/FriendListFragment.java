@@ -11,6 +11,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.example.luos.cst_project.Adapter.FriendAdapter;
 import com.example.luos.cst_project.Model.DataFrame;
 import com.example.luos.cst_project.R;
 
@@ -34,7 +35,7 @@ public class FriendListFragment extends ListFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getActivity().setTitle("我的朋友");
-        friendAdapter adapter = new friendAdapter(friends);
+        FriendAdapter adapter = new FriendAdapter(getActivity(),friends);
         setListAdapter(adapter);
     }
 
@@ -52,24 +53,24 @@ public class FriendListFragment extends ListFragment {
         this.friends = friends;
     }
 
-    private class friendAdapter extends ArrayAdapter<DataFrame.User> {
-
-
-        public friendAdapter(ArrayList<DataFrame.User> friends) {
-            super(getActivity(), 0, friends);
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            if(convertView==null){
-                convertView = getActivity().getLayoutInflater()
-                        .inflate(R.layout.friend_lsit_item,null);
-            }
-            TextView textView = (TextView) convertView.findViewById(R.id.friend_name);
-            DataFrame.User friend = getItem(position);
-
-            textView.setText(friend.getNickName());
-            return convertView;
-        }
-    }
+//    private class friendAdapter extends ArrayAdapter<DataFrame.User> {
+//
+//
+//        public friendAdapter(ArrayList<DataFrame.User> friends) {
+//            super(getActivity(), 0, friends);
+//        }
+//
+//        @Override
+//        public View getView(int position, View convertView, ViewGroup parent) {
+//            if(convertView==null){
+//                convertView = getActivity().getLayoutInflater()
+//                        .inflate(R.layout.friend_lsit_item,null);
+//            }
+//            TextView textView = (TextView) convertView.findViewById(R.id.friend_name);
+//            DataFrame.User friend = getItem(position);
+//
+//            textView.setText(friend.getNickName());
+//            return convertView;
+//        }
+//    }
 }

@@ -3,4 +3,15 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+
+    <drawable name="tweet_color">#FF000000</drawable>
+    <drawable name="tweet_meta_color">#FF999999</drawable>
+    <color name="white">#ffffffff</color>
+    <color name="red">#ff0000</color>
+    <color name="black">#ff000000</color>
+    <color name="blue">#ffccddff</color>
+    <color name="grey">#ff808080</color>
+    <color name="green">#00ff00</color>
+    <color name="pls_talk_normal">#ff707277</color>
+    <color name="search_hint">#ffcccccc</color>
 </resources>

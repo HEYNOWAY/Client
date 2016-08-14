@@ -114,15 +114,30 @@ public abstract class BaseActivity extends AppCompatActivity {
     public void sendNotifycation(List<DataFrame.PersonalMsg> msgList) {
         NotificationManager nm = (NotificationManager) getCurrentActivity().getSystemService(Context.NOTIFICATION_SERVICE);
         Intent intent = new Intent(getCurrentActivity(),ChatActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(getCurrentActivity(),0,intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        Notification.Builder build = new Notification.Builder(getCurrentActivity())
-                .setContentTitle("有通知")
-                .setContentText("你有一条新消息")
-                .setSmallIcon(R.drawable.notify_icon)
-                .setContentIntent(pendingIntent)
-                .setWhen(System.currentTimeMillis());
-        Notification notify = build.build();
-        nm.notify(1,notify);
+        if(msgList!=null){
+            int id = 1;
+            int currenSender = 0;
+            for (DataFrame.PersonalMsg msg: msgList) {
+                if( currenSender != msg.getSenderID()){
+                    currenSender = msg.getSenderID();
+                    intent.putExtra("friendId",msg.getRecverID());
+                    PendingIntent pendingIntent = PendingIntent.getActivity(getCurrentActivity(),id,intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                    Notification.Builder build = new Notification.Builder(getCurrentActivity())
+                            .setContentTitle("新消息")
+                            .setContentText(msg.getContent())
+                            .setSmallIcon(R.drawable.ic_notifications_white_36dp)
+                            .setContentIntent(pendingIntent)
+                            .setWhen(System.currentTimeMillis());
+                    Notification notify = build.build();
+                    notify.flags = Notification.FLAG_AUTO_CANCEL;
+                    nm.notify(id,notify);
+                    id++;
+                }
+
+
+            }
+        }
+
 
     }
 

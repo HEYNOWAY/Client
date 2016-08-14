@@ -1,32 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/tweet_layout"
+    android:orientation="horizontal"
+    android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="10dp">
+    android:padding="5dp">
 
-    <TextView
-        android:id="@+id/friend_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="5dp"
-        android:paddingLeft="4dp"
-        android:paddingTop="4dp"
-        android:paddingBottom="4dp"
-        android:text="myfriend"
-        android:textStyle="bold"
-        android:textSize="26dp"/>
+    <FrameLayout android:id="@+id/profile_layout"
+        android:layout_width="50dp"
+        android:layout_height="50dp" android:layout_marginTop="2dp"
+        android:layout_marginLeft="2dp" android:layout_marginBottom="2dp"
+        android:layout_marginRight="10dp">
+        <ImageView android:id="@+id/head"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="8dp"
+            android:src="@drawable/ic_person_black_36dp"/>
+        <!-- image corner -->
+        <ImageView
+            android:background="@drawable/border"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </FrameLayout>
 
-    <ImageView
-        android:id="@+id/notifiy"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="5dp"
-        android:paddingLeft="4dp"
-        android:paddingTop="4dp"
-        android:paddingBottom="4dp"
-        android:gravity="center"
-        android:layout_alignParentRight="true"
-        />
+    <LinearLayout android:orientation="vertical"
+        android:layout_width="match_parent" android:layout_height="wrap_content">
+        <RelativeLayout
+            android:layout_width="fill_parent" android:layout_height="wrap_content">
+            <!-- nickname -->
+            <TextView
+                android:id="@+id/name"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                />
+            <!-- last chatting time -->
+            <TextView android:id="@+id/time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:paddingTop="2dp"
+                android:textColor="@color/black"
+                android:textSize="12sp" />
+        </RelativeLayout>
 
+        <!-- last chatting type -->
+        <TextView
+            android:id="@+id/content"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:lineSpacingExtra="2sp" />
+    </LinearLayout>
 
-</RelativeLayout>
+  </LinearLayout>

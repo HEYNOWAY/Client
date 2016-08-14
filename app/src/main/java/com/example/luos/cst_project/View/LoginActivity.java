@@ -56,6 +56,12 @@ public class LoginActivity extends BaseActivity implements ILoginView,View.OnCli
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        finish();
+    }
+
+    @Override
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.login:
@@ -138,6 +144,7 @@ public class LoginActivity extends BaseActivity implements ILoginView,View.OnCli
         Intent intent=new Intent(this, FriendListActivity.class);
         startActivity(intent);
         intent.putExtra(LoginActivity.FriendList,friends);
+        finish();
     }
 
 }

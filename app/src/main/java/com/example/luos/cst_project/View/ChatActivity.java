@@ -8,10 +8,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 
-import com.example.luos.cst_project.Adapter.MsgListAdapter;
+import com.example.luos.cst_project.Adapter.ChattingAdapter;
 import com.example.luos.cst_project.Model.Config;
-import com.example.luos.cst_project.Model.MsgData;
+import com.example.luos.cst_project.Model.ChatMessage;
 import com.example.luos.cst_project.Presenter.IChatPresenter;
 import com.example.luos.cst_project.Presenter.IChatPresenterCompl;
 import com.example.luos.cst_project.R;
@@ -25,11 +26,12 @@ import java.util.List;
  */
 
 public class ChatActivity extends BaseActivity implements View.OnClickListener ,IChatView{
-    private List<MsgData> msgList = new ArrayList<MsgData>();
+    private List<ChatMessage> msgList = new ArrayList<ChatMessage>();
     private ListView mlistView;
     private EditText mEditText;
     private Button mSend;
-    private MsgListAdapter adapter;
+    private TextView mNickName;
+    private ChattingAdapter adapter;
     private IChatPresenter iChatPresenter;
     private int friendID;
     private String friendNickName;
@@ -42,10 +44,10 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener ,
     }
 
     private void Init() {
-        mEditText = (EditText) findViewById(R.id.input_msg);
-        mSend = (Button) findViewById(R.id.sned_btn);
-        mlistView = (ListView) findViewById(R.id.msg_list_view);
-        adapter = new MsgListAdapter(this,R.layout.msg_item,msgList);
+        mEditText = (EditText) findViewById(R.id.text_editor);
+        mSend = (Button) findViewById(R.id.send_button);
+        mlistView = (ListView) findViewById(R.id.chatting_history_lv);
+        adapter = new ChattingAdapter(this,msgList);
         mlistView.setAdapter(adapter);
         mSend.setOnClickListener(this);
         iChatPresenter = new IChatPresenterCompl(this);
@@ -62,11 +64,11 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener ,
     @Override
     public void onClick(View v) {
         switch (v.getId()){
-            case R.id.sned_btn:
+            case R.id.send_button:
                 String str = mEditText.getText().toString().trim();
                 String sendStr = str.replaceAll("\r", "").replaceAll("\t", "").replaceAll("\n", "").replaceAll("\f", "");
                 if(str!=null&&!str.equals("")&&sendStr!=null){
-                    sendChatMsg(Config.MESSAGE_TO,sendStr);
+                    sendChatMsg(Config.MESSAGE_TYPE_TXT,sendStr);
                     mEditText.setText("");
                 } else {
                     makeTextShort("发送消息不能为空");
@@ -82,7 +84,7 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener ,
         int userId = self.getUserID();
         boolean result = iChatPresenter.sendChatMessage(userId,friendID,content,time);
         if(result==true){
-            msgList.add(new MsgData(self.getUserID(),friendID,time,content,type));
+            msgList.add(new ChatMessage(self.getUserID(),friendID,time,content,type,Config.MESSAGE_TO));
             adapter.notifyDataSetChanged();
         } else {
             makeTextShort("消息发送失败");

@@ -1,66 +1,117 @@
 package com.example.luos.cst_project.Model;
 
-/**
- * Created by luos on 2016/7/27.
- */
+import android.os.Parcel;
+import android.os.Parcelable;
 
-public class Friend {
-    private int friendID;
-    private String frinedName;
-    private String friendNickName;
-    private String sex;
-    private String content;
-    private String time;
+public class Friend implements Parcelable {
+	private String friendID;       //好友ID
+	private String friendName;     //好友名字
+	private String head;           //好友头像路径
+	private String headModifyTime; //头像的时间戳
+	private String sex;
+	private int type;		     //最后一条消息类型
+	private String content;      //最后一条信息的内容
+	private String time;         //最后一条信息的时间
+	
+	public Friend(){
+		
+	}
+	
+	public Friend(Parcel in){
+	    friendID=in.readString();
+	    friendName=in.readString();
+	    head=in.readString();
+	    headModifyTime=in.readString();
+	    sex=in.readString();
+	    type=in.readInt();
+	    content=in.readString();
+	    time=in.readString();
+	}
 
-    public Friend(){
-
+	public String getHeadModifyTime() {
+        return headModifyTime;
     }
 
-    public int getFriendID() {
-        return friendID;
+    public void setHeadModifyTime(String headModifyTime) {
+        this.headModifyTime = headModifyTime;
     }
 
-    public void setFriendID(int friendID) {
-        this.friendID = friendID;
+    public int getType() {
+		return type;
+	}
+
+	public void setType(int type) {
+		this.type = type;
+	}
+
+	public String getHead() {
+		return head;
+	}
+
+	public void setHead(String head) {
+		this.head = head;
+	}
+
+	public String getSex() {
+		return sex;
+	}
+
+
+	public void setSex(String sex) {
+		this.sex = sex;
+	}
+
+
+	public String getFriendID() {
+		return friendID;
+	}
+	public void setFriendID(String friendID) {
+		this.friendID = friendID;
+	}
+	public String getFriendName() {
+		return friendName;
+	}
+	public void setFriendName(String friendName) {
+		this.friendName = friendName;
+	}
+	
+	public String getContent() {
+		return content;
+	}
+	public void setContent(String content) {
+		this.content = content;
+	}
+	public String getTime() {
+		return time;
+	}
+	public void setTime(String time) {
+		this.time = time;
+	}
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
-    public String getFrinedName() {
-        return frinedName;
+    @Override
+    public void writeToParcel(Parcel out, int flags) {
+        out.writeString(friendID);
+        out.writeString(friendName);
+        out.writeString(head);
+        out.writeString(headModifyTime);
+        out.writeString(sex);
+        out.writeInt(type);
+        out.writeString(content);
+        out.writeString(time);
     }
+    
+    public static final Parcelable.Creator<Friend> CREATOR= new Parcelable.Creator<Friend>() {
+        public Friend createFromParcel(Parcel in) {
+            return new Friend(in);
+        }
 
-    public void setFrinedName(String frinedName) {
-        this.frinedName = frinedName;
-    }
-
-    public String getFriendNickName() {
-        return friendNickName;
-    }
-
-    public void setFriendNickName(String friendNickName) {
-        this.friendNickName = friendNickName;
-    }
-
-    public String getSex() {
-        return sex;
-    }
-
-    public void setSex(String sex) {
-        this.sex = sex;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public String getTime() {
-        return time;
-    }
-
-    public void setTime(String time) {
-        this.time = time;
-    }
+        public Friend[] newArray(int size) {
+            return new Friend[size];
+        }
+    };
 }

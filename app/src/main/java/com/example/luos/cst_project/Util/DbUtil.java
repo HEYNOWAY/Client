@@ -1,6 +1,6 @@
 package com.example.luos.cst_project.Util;
 
-import com.example.luos.cst_project.Model.MsgData;
+import com.example.luos.cst_project.Model.ChatMessage;
 import com.example.luos.cst_project.Util.MsgDbContract.MsgEntry;
 
 import android.content.ContentValues;
@@ -43,8 +43,8 @@ public class DbUtil extends SQLiteOpenHelper {
 
     }
 
-    public ArrayList<MsgData> queryMessages(String selfId, String friendId){
-        ArrayList<MsgData> list=new ArrayList<MsgData>();
+    public ArrayList<ChatMessage> queryMessages(String selfId, String friendId){
+        ArrayList<ChatMessage> list=new ArrayList<ChatMessage>();
         SQLiteDatabase db=getReadableDatabase();
         String selection="self_Id=? and friend_Id=?";
         String[] selectionArgs=new String[]{"'"+selfId+"'","'"+friendId+"'"};
@@ -58,7 +58,7 @@ public class DbUtil extends SQLiteOpenHelper {
 
         cursor.moveToFirst();
         while(!cursor.isAfterLast()){
-            MsgData message=new MsgData();
+            ChatMessage message=new ChatMessage();
             message.setSendId(cursor.getInt(cursor.getColumnIndex("self_Id")));
             message.setReceiveId(cursor.getInt(cursor.getColumnIndex("friend_Id")));
             message.setType(cursor.getInt(cursor.getColumnIndex("type")));
