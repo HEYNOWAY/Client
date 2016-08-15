@@ -6,12 +6,14 @@
     android:layout_width="fill_parent" 
     android:layout_height="wrap_content"
     >
-    <TextView
+
+	<TextView
         android:id="@+id/chatting_time_tv"
-    	android:gravity="left"
-    	style="@style/ChattingUISplit"
-        /> 
-    <LinearLayout 
+        android:gravity="left"
+        style="@style/ChattingUISplit"
+        />
+
+	<LinearLayout
     	android:orientation="horizontal" 
     	android:layout_width="wrap_content" 
     	android:layout_height="wrap_content"
@@ -24,14 +26,20 @@
 			android:layout_height="wrap_content">
 
 			<TextView
-				android:id="@+id/chatting_content_itv"
-				style="@style/ChattingUIText"
-				android:autoLink="web" />
-		</LinearLayout>
-		<ImageView
-			android:id="@+id/chatting_state_iv"
+			android:id="@+id/chatting_content_itv"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
+			android:text="recive message......"
+			android:layout_gravity="center"
+			android:textSize="16dp"
+			android:autoLink="web"/>
+
+		</LinearLayout>
+
+		<ProgressBar
+			android:id="@+id/chatting_state"
+			android:layout_width="20dp"
+			android:layout_height="20dp"
 			android:layout_gravity="center"/>
     </LinearLayout>
 </LinearLayout>

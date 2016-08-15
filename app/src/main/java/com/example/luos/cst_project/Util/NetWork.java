@@ -1,5 +1,6 @@
 package com.example.luos.cst_project.Util;
 
+import android.content.ContentValues;
 import android.os.Bundle;
 import android.os.Message;
 import android.util.Log;
@@ -8,12 +9,11 @@ import com.example.luos.cst_project.Model.Config;
 import com.example.luos.cst_project.Model.Contents;
 import com.example.luos.cst_project.Model.DataFrame;
 import com.example.luos.cst_project.Model.User;
+import com.example.luos.cst_project.Util.FriendDbContract.FriendsEntry;
 import com.example.luos.cst_project.Presenter.BaseIPresenter;
-import com.example.luos.cst_project.Presenter.IFriendListPresenterCompl;
-import com.example.luos.cst_project.Presenter.ILoginPresenterCompl;
 import com.example.luos.cst_project.Presenter.ReceiveInfoListener;
 import com.example.luos.cst_project.View.BaseActivity;
-import com.example.luos.cst_project.View.FriendListActivity;
+
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -43,6 +43,7 @@ public class NetWork extends Thread {
    private static DataFrame.Msg send_msg ;
    private static DataFrame.Msg recive_msg;
    Vector<ReceiveInfoListener> listeners=new Vector<ReceiveInfoListener>();
+
 
 
    public synchronized static NetWork getInstance(){
@@ -157,7 +158,7 @@ public class NetWork extends Thread {
             user.setUserID(userId);
             String userName = recive_msg.getUser().getUesrName();
             user.setUserName(userName);
-            ILoginPresenterCompl.setUser(user);
+            BaseIPresenter.setUser(user);
             Log.d("Test_server_msg","User NickName Id:"+user.getNickName()+user.getUserID());
             BaseIPresenter.sendEmptyMessage(Config.LOGIN_SUCCESS);
             getFriends(userId);
@@ -191,8 +192,20 @@ public class NetWork extends Thread {
    public void handletfriend() {
       if(recive_msg.getOptResult()==true){
          List<DataFrame.User> friends = recive_msg.getFriendsList();
-         ILoginPresenterCompl.setFriendList(friends);
-         Log.d("Test_handlefriends","recive message optresult...."+ FriendListActivity.friends);
+         ContentValues values=new ContentValues();
+         int friendId;
+         String nickName;
+         for (DataFrame.User friend: friends) {
+
+            friendId = friend.getUserID();
+            nickName = friend.getNickName();
+
+            values.put(FriendsEntry.USER_ID, BaseIPresenter.getUser().getUserID());
+            values.put(FriendsEntry.FRIEND_ID, friendId);
+            values.put(FriendsEntry.NICKNAME, nickName);
+
+            BaseIPresenter.getDbUtil().insertFriend(values);
+         }
       } else if(recive_msg.getOptResult()==false){
          //handle 返回界面处理
       }

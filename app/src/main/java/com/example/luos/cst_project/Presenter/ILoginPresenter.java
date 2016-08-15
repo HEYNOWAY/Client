@@ -6,6 +6,5 @@ package com.example.luos.cst_project.Presenter;
 
 public interface ILoginPresenter {
     void doLogin(String username,String password);
-    void setProgressBarVisible(int visibility);
     void getOffMsg(int userId);
 }

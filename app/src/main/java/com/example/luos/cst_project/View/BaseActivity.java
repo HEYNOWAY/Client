@@ -22,6 +22,7 @@ import com.example.luos.cst_project.Model.DataFrame;
 import com.example.luos.cst_project.Model.User;
 import com.example.luos.cst_project.R;
 import com.example.luos.cst_project.Util.DbUtil;
+import com.example.luos.cst_project.Util.MsgDbContract.MsgEntry;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -57,6 +58,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
         if(dbUtil==null){
             dbUtil=new DbUtil(this);
+            Log.d("Test_DbUtil","new DbUitl in BaseActivity");
         }
         requestWindowFeature(Window.FEATURE_NO_TITLE);
     }
@@ -68,6 +70,16 @@ public abstract class BaseActivity extends AppCompatActivity {
             queue.removeLast();
         }
     }
+
+
+    public static User getSelf() {
+        return self;
+    }
+
+    public static void setSelf(User self) {
+        BaseActivity.self = self;
+    }
+
 
 
     public void makeTextShort(String text) {
@@ -91,6 +103,20 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     public abstract  void processMessage(Message msg);
+
+    public static DbUtil getDbUtil(){
+        return dbUtil;
+    }
+
+    @Override
+    public void onBackPressed() {
+        Log.i(TAG, "Activity number="+queue.size());
+        if(queue.size()==1){	//当前Activity是最后一个Activity了
+//            showDialog(EXIT_DIALOG);
+        }else{
+            queue.getLast().finish();
+        }
+    }
 
     protected void setPreference(String userName, String pwd){
         SharedPreferences sp=getSharedPreferences(PREFERENCE_NAME, Activity.MODE_PRIVATE);
@@ -116,10 +142,10 @@ public abstract class BaseActivity extends AppCompatActivity {
         Intent intent = new Intent(getCurrentActivity(),ChatActivity.class);
         if(msgList!=null){
             int id = 1;
-            int currenSender = 0;
+            int currentSender = 0;
             for (DataFrame.PersonalMsg msg: msgList) {
-                if( currenSender != msg.getSenderID()){
-                    currenSender = msg.getSenderID();
+                if( currentSender != msg.getSenderID()){
+                    currentSender = msg.getSenderID();
                     intent.putExtra("friendId",msg.getRecverID());
                     PendingIntent pendingIntent = PendingIntent.getActivity(getCurrentActivity(),id,intent, PendingIntent.FLAG_UPDATE_CURRENT);
                     Notification.Builder build = new Notification.Builder(getCurrentActivity())
@@ -138,17 +164,16 @@ public abstract class BaseActivity extends AppCompatActivity {
             }
         }
 
-
     }
 
     public void saveMessageToDb(List<DataFrame.PersonalMsg> msgList) {
         ContentValues values = new ContentValues();
         for (DataFrame.PersonalMsg msg:msgList) {
-            values.put("sender_id",msg.getSenderID());
-            values.put("reciver_id",msg.getRecverID());
-            values.put("type",msg.getMsgType());
-            values.put("content",msg.getContent());
-            values.put("time",msg.getSendTime());
+            values.put(MsgEntry.SEND_ID,msg.getSenderID());
+            values.put(MsgEntry.RECEVICE_ID,msg.getRecverID());
+            values.put(MsgEntry.TYPE,msg.getMsgType());
+            values.put(MsgEntry.CONTENT,msg.getContent());
+            values.put(MsgEntry.TIME,msg.getSendTime());
             dbUtil.insertMessage(values);
         }
     }

@@ -27,12 +27,12 @@ import java.util.ArrayList;
 
 public class FriendAdapter extends BaseAdapter {
     final static String TAG="FriendAdapter";
-    private ArrayList<DataFrame.User> list;
+    private ArrayList<Friend> list;
     private Context context;
     private LayoutInflater inflater;
     private LinearLayout layout;
 
-    public FriendAdapter(Context context, ArrayList<DataFrame.User> list){
+    public FriendAdapter(Context context, ArrayList<Friend> list){
         this.context=context;
         this.list=list;
     }
@@ -68,21 +68,21 @@ public class FriendAdapter extends BaseAdapter {
             holder=(ViewHolder)convertView.getTag();
         }
 
-        DataFrame.User friend=list.get(position);
-        holder.name.setText(friend.getNickName());
+        Friend friend=list.get(position);
+        holder.name.setText(friend.getFriendName());
 
-//        int type=friend.getType();
-//        if(type== Config.MESSAGE_TYPE_TXT){
-//            holder.content.setText(friend.getContent());
-//        }else if(type==Config.MESSAGE_TYPE_IMG){
-//            holder.content.setText("[图片]");
-//        }else if(type==Config.MESSAGE_TYPE_AUDIO){
-//            holder.content.setText("[语音]");
-//        }
-//        String time=friend.getTime();
-//        if(time!=null && !"".equals(time)){
-//            holder.time.setText(TimeUtil.getRelativeTime(time));
-//        }
+        int type=friend.getType();
+        if(type== Config.MESSAGE_TYPE_TXT){
+            holder.content.setText(friend.getContent());
+        }else if(type==Config.MESSAGE_TYPE_IMG){
+            holder.content.setText("[图片]");
+        }else if(type==Config.MESSAGE_TYPE_AUDIO){
+            holder.content.setText("[语音]");
+        }
+        String time=friend.getTime();
+        if(time!=null && !"".equals(time)){
+            holder.time.setText(TimeUtil.getRelativeTime(time));
+        }
 
         convertView.setTag(holder);
         return convertView;

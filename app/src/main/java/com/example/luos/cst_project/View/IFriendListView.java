@@ -9,6 +9,6 @@ import java.util.ArrayList;
  */
 
 public interface IFriendListView {
-    public ArrayList<DataFrame.User> getFriendList();
-    public void setFriendList(ArrayList<DataFrame.User> friend);
+    ArrayList<DataFrame.User> getFriendList();
+    void setFriendList(ArrayList<DataFrame.User> friend);
 }

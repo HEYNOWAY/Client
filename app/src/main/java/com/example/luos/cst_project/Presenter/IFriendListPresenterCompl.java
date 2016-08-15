@@ -18,11 +18,13 @@ import java.util.ArrayList;
  */
 
 public class IFriendListPresenterCompl extends BaseIPresenter{
-    private static FriendListActivity friendListActivity;
+    private static IFriendListView iFriendListView;
 
-
-    public IFriendListPresenterCompl(FriendListActivity friendListActivity){
-        this.friendListActivity = friendListActivity;
+    public IFriendListPresenterCompl(IFriendListView iFriendListView){
+        this.iFriendListView = iFriendListView;
     }
+
+
+
 
 }

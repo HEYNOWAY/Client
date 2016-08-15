@@ -12,6 +12,8 @@ import com.example.luos.cst_project.Model.Config;
 import com.example.luos.cst_project.Model.DataFrame;
 import com.example.luos.cst_project.Model.User;
 import com.example.luos.cst_project.Util.NetWork;
+import com.example.luos.cst_project.View.BaseActivity;
+import com.example.luos.cst_project.View.ILoginView;
 import com.example.luos.cst_project.View.LoginActivity;
 
 import java.util.ArrayList;
@@ -22,12 +24,12 @@ import java.util.List;
  */
 
 public class ILoginPresenterCompl extends BaseIPresenter implements ILoginPresenter {
-    private static LoginActivity loginActivity;
+    private static ILoginView iLoginView;
     private NetWork netWork;
 
 
-    public ILoginPresenterCompl(LoginActivity loginActivity){
-        this.loginActivity = loginActivity;
+    public ILoginPresenterCompl(ILoginView iLoginView){
+        this.iLoginView = iLoginView;
         netWork = NetWork.getInstance();
         Log.d("Test_newWork","a network instance");
         netWork.start();
@@ -40,17 +42,12 @@ public class ILoginPresenterCompl extends BaseIPresenter implements ILoginPresen
     public void doLogin(String username, String password) {
         boolean isLogin = netWork.login(username,password);
         if(!isLogin){
-            loginActivity.onToastResult(Config.LOGIN_FAILED);
+           iLoginView.onToastResult(Config.LOGIN_FAILED);
             Log.d("Test_doLogin","Failed!");
         }
 
     }
 
-
-    @Override
-    public void setProgressBarVisible(int visibility) {
-       loginActivity.setProgressbarVisible(visibility);
-    }
 
     @Override
     public void getOffMsg(int userId) {
@@ -59,13 +56,12 @@ public class ILoginPresenterCompl extends BaseIPresenter implements ILoginPresen
 
 
     public static void setFriendList(List<DataFrame.User> friends) {
-
-        loginActivity.friends = new ArrayList<>(friends);
-        Log.d("Test_setFriendList....",loginActivity.friends.toString());
+        BaseActivity.friends = new ArrayList<>(friends);
+        Log.d("Test_setFriendList....",BaseActivity.friends.toString());
     }
 
     public static void setUser(User user){
-        loginActivity.self = user;
-        Log.d("Test_setUser",loginActivity.self.getUserID()+"");
+        BaseActivity.self = user;
+        Log.d("Test_setUser",BaseActivity.self.getUserID()+"");
     }
 }

@@ -43,7 +43,7 @@ public class LoginActivity extends BaseActivity implements ILoginView,View.OnCli
 
         loginPresenter = new ILoginPresenterCompl(this);
         Log.d("Test_onCreate","excute loginPresenter instance...");
-        loginPresenter.setProgressBarVisible(View.INVISIBLE);
+        setProgressbarVisible(View.INVISIBLE);
     }
 
     private void Init() {
@@ -144,7 +144,6 @@ public class LoginActivity extends BaseActivity implements ILoginView,View.OnCli
         Intent intent=new Intent(this, FriendListActivity.class);
         startActivity(intent);
         intent.putExtra(LoginActivity.FriendList,friends);
-        finish();
     }
 
 }

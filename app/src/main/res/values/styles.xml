@@ -18,13 +18,6 @@
         <item name="android:layout_width">fill_parent</item>
         <item name="android:layout_height">wrap_content</item>
     </style>
-    <style name="ChattingUIText">
-        <item name="android:textSize">15.0dip</item>
-        <item name="android:textColor">#ff000000</item>
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:maxWidth">200.0dip</item>
-    </style>
 
     <style name="MMTitleStyle">
         <item name="android:gravity">center_vertical</item>

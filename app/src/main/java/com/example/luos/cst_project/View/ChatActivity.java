@@ -52,7 +52,6 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener ,
         mSend.setOnClickListener(this);
         iChatPresenter = new IChatPresenterCompl(this);
         Intent intent = getIntent();
-        friendID = intent.getIntExtra(FriendListFragment.EXTRA_FRIENDID,0);
         friendNickName = intent.getStringExtra(FriendListFragment.EXTRA_FRIENDNICKNAME);
     }
 

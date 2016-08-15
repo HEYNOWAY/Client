@@ -61,24 +61,12 @@ public class ChattingAdapter extends BaseAdapter {
         int direction=message.getDirection();   //direction: to or from ?
         int type = message.getType();
         if (direction== Config.MESSAGE_FROM) {
-            if(type==Config.MESSAGE_TYPE_TXT){
-                convertView = LayoutInflater.from(context).inflate(
-                        R.layout.chatting_item_sms_from, null);
-            }else{
                 convertView = LayoutInflater.from(context).inflate(R.layout.chatting_item_from, null);
-            }
         }else if(direction==Config.MESSAGE_TO) {
-            if(type==Config.MESSAGE_TYPE_TXT){
-                convertView = LayoutInflater.from(context).inflate(R.layout.chatting_item_sms_to, null);
-
-            }else{
                 convertView = LayoutInflater.from(context).inflate(R.layout.chatting_item_to, null);
-            }
         }
 
         holder.time=(TextView)convertView.findViewById(R.id.chatting_time_tv);
-        holder.img = (ImageView) convertView
-                .findViewById(R.id.chatting_state_iv);
         holder.text = (TextView) convertView
                 .findViewById(R.id.chatting_content_itv);
 
@@ -92,20 +80,12 @@ public class ChattingAdapter extends BaseAdapter {
 
         switch (type) {
             case Config.MESSAGE_TYPE_TXT: {    //处理"文本"
-                LinearLayout layout=(LinearLayout)convertView.findViewById(R.id.chatting_item_sms);
                 String content=message.getContent();
                 Log.i(TAG, "getView():MESAGE_TYPE_TXT, content="+content);
-
                 if(direction==Config.MESSAGE_FROM){
-                    TextView txt=new TextView(context);
-                    txt.setGravity(Gravity.CENTER);
-                    layout.addView(txt);
+                    holder.text.setText(content);
                 } else {
-                    TextView txt=new TextView(context);
-                    txt.setGravity(Gravity.CENTER);
-                    txt.setTextColor(Color.BLACK);
-                    txt.setText(content);
-                    layout.addView(txt);
+                    holder.text.setText(content);
                 }
 
                 return convertView;

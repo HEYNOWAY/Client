@@ -9,15 +9,6 @@ public class ChatMessage {
     private int receiveId;
     private int sendId;
     private int type;
-
-    public int getDirection() {
-        return direction;
-    }
-
-    public void setDirection(int direction) {
-        this.direction = direction;
-    }
-
     private int direction;
     private String time;
     private String content;
@@ -58,6 +49,15 @@ public class ChatMessage {
     public void setType(int type) {
         this.type = type;
     }
+
+    public int getDirection() {
+        return direction;
+    }
+
+    public void setDirection(int direction) {
+        this.direction = direction;
+    }
+
 
     public String getTime() {
         return time;

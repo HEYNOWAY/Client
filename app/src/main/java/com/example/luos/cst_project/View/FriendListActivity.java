@@ -32,7 +32,6 @@ public class FriendListActivity extends BaseActivity implements IFriendListView 
         fm.beginTransaction()
                 .add(R.id.activity_friend_list,fragment)
                 .commit();
-        fragment.setFriends(friends);
         IFriendListPresenterCompl compl = new IFriendListPresenterCompl(this);
     }
 
