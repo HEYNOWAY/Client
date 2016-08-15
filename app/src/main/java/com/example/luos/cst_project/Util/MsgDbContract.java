@@ -15,8 +15,10 @@ public final class MsgDbContract {
         public static final String SEND_ID = "send_id";
         public static final String RECEVICE_ID = "recevice_id";
         public static final String TYPE = "type";
+        public static final String DIRECTION = "direction";
         public static final String CONTENT = "content";
         public static final String TIME = "time";
+
     }
 
 }

@@ -1,22 +1,20 @@
 package com.example.luos.cst_project.Presenter;
 
-//import android.content.Context;
-//import android.content.Intent;
-import android.os.Message;
-//import android.text.LoginFilter;
+
+import android.content.ContentValues;
 import android.util.Log;
-//import android.view.View;
-//import android.widget.Toast;
+
 
 import com.example.luos.cst_project.Model.Config;
 import com.example.luos.cst_project.Model.DataFrame;
 import com.example.luos.cst_project.Model.User;
+import com.example.luos.cst_project.Util.MsgDbContract.MsgEntry;
 import com.example.luos.cst_project.Util.NetWork;
 import com.example.luos.cst_project.View.BaseActivity;
 import com.example.luos.cst_project.View.ILoginView;
 import com.example.luos.cst_project.View.LoginActivity;
 
-import java.util.ArrayList;
+
 import java.util.List;
 
 /**
@@ -34,9 +32,7 @@ public class ILoginPresenterCompl extends BaseIPresenter implements ILoginPresen
         Log.d("Test_newWork","a network instance");
         netWork.start();
         Log.d("Test_newWork","start netWork");
-
     }
-
 
     @Override
     public void doLogin(String username, String password) {
@@ -45,9 +41,7 @@ public class ILoginPresenterCompl extends BaseIPresenter implements ILoginPresen
            iLoginView.onToastResult(Config.LOGIN_FAILED);
             Log.d("Test_doLogin","Failed!");
         }
-
     }
-
 
     @Override
     public void getOffMsg(int userId) {
@@ -55,13 +49,21 @@ public class ILoginPresenterCompl extends BaseIPresenter implements ILoginPresen
     }
 
 
-    public static void setFriendList(List<DataFrame.User> friends) {
-        BaseActivity.friends = new ArrayList<>(friends);
-        Log.d("Test_setFriendList....",BaseActivity.friends.toString());
-    }
-
     public static void setUser(User user){
         BaseActivity.self = user;
         Log.d("Test_setUser",BaseActivity.self.getUserID()+"");
+    }
+
+    public void saveMessageToDb(List<DataFrame.PersonalMsg> msgList) {
+        ContentValues values = new ContentValues();
+        for (DataFrame.PersonalMsg msg:msgList) {
+            values.put(MsgEntry.SEND_ID,msg.getSenderID());
+            values.put(MsgEntry.RECEVICE_ID,msg.getRecverID());
+            values.put(MsgEntry.TYPE,msg.getMsgType());
+            values.put(MsgEntry.CONTENT,msg.getContent());
+            values.put(MsgEntry.TIME,msg.getSendTime());
+            values.put(MsgEntry.DIRECTION,Config.MESSAGE_FROM);
+            getDbUtil().insertMessage(values);
+        }
     }
 }

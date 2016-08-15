@@ -38,7 +38,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     private static final String PREFERENCE_NAME="woliao.pre";
     private static final String USERNAME="userName";
     private static final String PWD = "password";
-    private static DbUtil dbUtil;
+    protected static DbUtil dbUtil;
     public  static User self = new User();
     private static Handler handler = new Handler(){
         @Override
@@ -49,6 +49,8 @@ public abstract class BaseActivity extends AppCompatActivity {
             }
         }
     };
+
+    public abstract  void processMessage(Message msg);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,8 +103,6 @@ public abstract class BaseActivity extends AppCompatActivity {
     public static void sendEmptyMessage(int what){
         handler.sendEmptyMessage(what);
     }
-
-    public abstract  void processMessage(Message msg);
 
     public static DbUtil getDbUtil(){
         return dbUtil;
@@ -166,16 +166,6 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     }
 
-    public void saveMessageToDb(List<DataFrame.PersonalMsg> msgList) {
-        ContentValues values = new ContentValues();
-        for (DataFrame.PersonalMsg msg:msgList) {
-            values.put(MsgEntry.SEND_ID,msg.getSenderID());
-            values.put(MsgEntry.RECEVICE_ID,msg.getRecverID());
-            values.put(MsgEntry.TYPE,msg.getMsgType());
-            values.put(MsgEntry.CONTENT,msg.getContent());
-            values.put(MsgEntry.TIME,msg.getSendTime());
-            dbUtil.insertMessage(values);
-        }
-    }
+
 
 }

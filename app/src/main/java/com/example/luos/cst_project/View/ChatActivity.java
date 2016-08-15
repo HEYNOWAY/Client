@@ -26,6 +26,7 @@ import java.util.List;
  */
 
 public class ChatActivity extends BaseActivity implements View.OnClickListener ,IChatView{
+    protected static final String TAG = "Test_ChatActivity";
     private List<ChatMessage> msgList = new ArrayList<ChatMessage>();
     private ListView mlistView;
     private EditText mEditText;
@@ -47,13 +48,37 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener ,
         mEditText = (EditText) findViewById(R.id.text_editor);
         mSend = (Button) findViewById(R.id.send_button);
         mlistView = (ListView) findViewById(R.id.chatting_history_lv);
-        adapter = new ChattingAdapter(this,msgList);
-        mlistView.setAdapter(adapter);
+        mNickName = (TextView) findViewById(R.id.nickName);
+
+        setAdapterForThis();
+
         mSend.setOnClickListener(this);
+
         iChatPresenter = new IChatPresenterCompl(this);
+
         Intent intent = getIntent();
         friendNickName = intent.getStringExtra(FriendListFragment.EXTRA_FRIENDNICKNAME);
+        friendID = intent.getIntExtra(FriendListFragment.EXTRA_FRIENDID,0);
+        mNickName.setText(friendNickName);
     }
+
+    private void setAdapterForThis(){
+        initMessages();
+        if(msgList==null){
+            msgList = new ArrayList<ChatMessage>();
+        }
+        adapter = new ChattingAdapter(this,msgList);
+        mlistView.setAdapter(adapter);
+    }
+
+    public void initMessages(){
+        msgList = dbUtil.queryMessages(self.getUserID()+"", friendID+"");
+        Log.i(TAG, "messages="+msgList);
+        if(msgList!=null){
+            Log.i(TAG, "initMessages() messages.size="+msgList.size());
+        }
+    }
+
 
     @Override
     public void processMessage(Message msg) {
@@ -83,7 +108,9 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener ,
         int userId = self.getUserID();
         boolean result = iChatPresenter.sendChatMessage(userId,friendID,content,time);
         if(result==true){
-            msgList.add(new ChatMessage(self.getUserID(),friendID,time,content,type,Config.MESSAGE_TO));
+            ChatMessage message = new ChatMessage(userId,friendID,time,content,type,Config.MESSAGE_TO);
+            msgList.add(message);
+            iChatPresenter.saveMessageToDb(message);
             adapter.notifyDataSetChanged();
         } else {
             makeTextShort("消息发送失败");

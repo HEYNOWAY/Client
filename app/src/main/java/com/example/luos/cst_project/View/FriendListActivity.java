@@ -18,6 +18,7 @@ import java.util.List;
 public class FriendListActivity extends BaseActivity implements IFriendListView {
     private FriendListFragment fragment;
     private User user;
+    IFriendListPresenterCompl compl;
 
 
     @Override
@@ -32,7 +33,7 @@ public class FriendListActivity extends BaseActivity implements IFriendListView 
         fm.beginTransaction()
                 .add(R.id.activity_friend_list,fragment)
                 .commit();
-        IFriendListPresenterCompl compl = new IFriendListPresenterCompl(this);
+        compl = new IFriendListPresenterCompl(this);
     }
 
     @Override
@@ -44,7 +45,7 @@ public class FriendListActivity extends BaseActivity implements IFriendListView 
                 ArrayList data = bundle.getParcelableArrayList("msgList");
                 List<DataFrame.PersonalMsg> msgList = (List<DataFrame.PersonalMsg>) data.get(0);
                 Log.d("Test_msgList",msgList.toString());
-                saveMessageToDb(msgList);
+                compl.saveMessageToDb(msgList);
                 sendNotifycation(msgList);
                 break;
             default:

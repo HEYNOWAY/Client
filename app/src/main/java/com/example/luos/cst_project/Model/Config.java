@@ -20,7 +20,7 @@ public class Config {
     public static final int REQUEST_SEND_TXT=17;
     public static final int REQUEST_SEND_IMG=18;
     public static final int REQUEST_SEND_AUDIO=19;
-    public static final int REQUEST_GET_OFFLINE_MSG=20;      //获取未发送的消息（暂存在服务器端）
+    public static final int REQUEST_GET_OFFLINE_MSG=20;
     public static final int REQUEST_GET_FRIENDS=21;
     public static final int REQUEST_SEARCH_USER=22;
     public static final int REQUEST_EXIT=23;

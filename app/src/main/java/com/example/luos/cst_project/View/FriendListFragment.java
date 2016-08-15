@@ -40,6 +40,7 @@ public class FriendListFragment extends ListFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getActivity().setTitle("我的朋友");
+        registerForContextMenu(getListView());
     }
 
 
@@ -70,6 +71,7 @@ public class FriendListFragment extends ListFragment {
     public void onListItemClick(ListView l, View v, int position, long id) {
         Friend friend = (Friend) getListAdapter().getItem(position);
         Intent i = new Intent(getActivity(), ChatActivity.class);
+        i.putExtra(EXTRA_FRIENDID,friend.getFriendID());
         i.putExtra(EXTRA_FRIENDNICKNAME,friend.getFriendName());
         Log.d("Test onListItemClick()",friend.toString());
         startActivity(i);

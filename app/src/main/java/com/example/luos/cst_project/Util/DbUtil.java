@@ -20,7 +20,7 @@ import java.util.ArrayList;
 
 public class DbUtil extends SQLiteOpenHelper {
 
-    public static final int DATABASE_VERSION = 2;
+    public static final int DATABASE_VERSION = 4;
     public static final String DATABASE_NAME = "Message.db";
     private static final String SQL_DELETE_FRIENDS =
             "DROP TABLE IF EXISTS " + FriendsEntry.TABLE_NAME;
@@ -38,6 +38,7 @@ public class DbUtil extends SQLiteOpenHelper {
                 MsgEntry._ID + " INTEGER PRIMARY KEY,"+
                 MsgEntry.SEND_ID + " integer," +
                 MsgEntry.RECEVICE_ID + " integer," +
+                MsgEntry.DIRECTION + " integer," +
                 MsgEntry.TYPE + " integer," +
                 MsgEntry.CONTENT + " varchar2(240)," +
                 MsgEntry.TIME + " varchar2(12)" +

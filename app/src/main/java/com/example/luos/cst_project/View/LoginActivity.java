@@ -103,7 +103,7 @@ public class LoginActivity extends BaseActivity implements ILoginView,View.OnCli
                 ArrayList data = bundle.getParcelableArrayList("msgList");
                 List<DataFrame.PersonalMsg> msgList = (List<DataFrame.PersonalMsg>) data.get(0);
                 Log.d("Test_msgList",msgList.toString());
-                saveMessageToDb(msgList);
+                loginPresenter.saveMessageToDb(msgList);
                 sendNotifycation(msgList);
             default:
                 break;

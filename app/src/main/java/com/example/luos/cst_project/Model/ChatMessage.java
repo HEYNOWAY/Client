@@ -17,7 +17,7 @@ public class ChatMessage {
 
     }
 
-    public ChatMessage(int receiveId, int sendId, String time, String content, int type, int direction) {
+    public ChatMessage(int sendId,int receiveId,  String time, String content, int type, int direction) {
         this.receiveId = receiveId;
         this.sendId = sendId;
         this.time = time;

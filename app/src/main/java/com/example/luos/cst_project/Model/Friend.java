@@ -56,15 +56,14 @@ public class Friend implements Parcelable {
 		return sex;
 	}
 
-
 	public void setSex(String sex) {
 		this.sex = sex;
 	}
 
-
 	public String getFriendID() {
 		return friendID;
 	}
+
 	public void setFriendID(String friendID) {
 		this.friendID = friendID;
 	}

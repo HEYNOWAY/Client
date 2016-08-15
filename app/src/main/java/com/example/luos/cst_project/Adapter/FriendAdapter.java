@@ -58,8 +58,6 @@ public class FriendAdapter extends BaseAdapter {
         if(convertView==null){
             holder=new ViewHolder();
             convertView=inflater.from(context).inflate(R.layout.friend_lsit_item, null);
-//            holder.headImg=(ImageView)convertView.findViewById(R.id.head);
-//            holder.headImg.setScaleType(ImageView.ScaleType.FIT_XY);
             holder.name=(TextView)convertView.findViewById(R.id.name);
             holder.content=(TextView)convertView.findViewById(R.id.content);
             holder.time=(TextView)convertView.findViewById(R.id.time);
