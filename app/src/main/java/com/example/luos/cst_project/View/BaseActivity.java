@@ -19,6 +19,7 @@ import android.view.Window;
 import android.widget.Toast;
 
 import com.example.luos.cst_project.Model.DataFrame;
+import com.example.luos.cst_project.Model.Friend;
 import com.example.luos.cst_project.Model.User;
 import com.example.luos.cst_project.R;
 import com.example.luos.cst_project.Util.DbUtil;
@@ -35,16 +36,14 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected static LinkedList<BaseActivity> queue = new LinkedList<BaseActivity>();
     public static ArrayList<DataFrame.User> friends;
     private static final String TAG="WoliaoBaseActivity";
-    private static final String PREFERENCE_NAME="woliao.pre";
-    private static final String USERNAME="userName";
-    private static final String PWD = "password";
+
     protected static DbUtil dbUtil;
     public  static User self = new User();
     private static Handler handler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
             if(!queue.isEmpty()){
-                Log.d("Test_baseActivity","start handleMessage,"+queue.getLast().toString());
+                Log.i(TAG,"start handleMessage,Activity is "+queue.getLast().toString());
                 queue.getLast().processMessage(msg);
             }
         }
@@ -60,7 +59,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
         if(dbUtil==null){
             dbUtil=new DbUtil(this);
-            Log.d("Test_DbUtil","new DbUitl in BaseActivity");
         }
         requestWindowFeature(Window.FEATURE_NO_TITLE);
     }
@@ -88,9 +86,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
     }
 
-    public void makeTextLong(String text) {
-        Toast.makeText(this, text, Toast.LENGTH_LONG).show();
-    }
 
     public static BaseActivity getCurrentActivity(){
         return queue.getLast();
@@ -110,30 +105,12 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        Log.i(TAG, "Activity number="+queue.size());
+        Log.i(TAG, "onBackPressed().... Activity number="+queue.size());
         if(queue.size()==1){	//当前Activity是最后一个Activity了
 //            showDialog(EXIT_DIALOG);
         }else{
             queue.getLast().finish();
         }
-    }
-
-    protected void setPreference(String userName, String pwd){
-        SharedPreferences sp=getSharedPreferences(PREFERENCE_NAME, Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor=sp.edit();
-        editor.putString(USERNAME, userName);
-        editor.putString(PWD, pwd);
-        editor.commit();
-    }
-
-    protected User getPreference(){
-        User user=new User();
-        SharedPreferences sp=getSharedPreferences(PREFERENCE_NAME, Activity.MODE_PRIVATE);
-        String userName=sp.getString(USERNAME, "");
-        String pwd=sp.getString(PWD, "");
-        user.setUserName(userName);
-        user.setUserPassword(pwd);
-        return user;
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
@@ -146,10 +123,11 @@ public abstract class BaseActivity extends AppCompatActivity {
             for (DataFrame.PersonalMsg msg: msgList) {
                 if( currentSender != msg.getSenderID()){
                     currentSender = msg.getSenderID();
-                    intent.putExtra("friendId",msg.getRecverID());
+                    Friend friend = dbUtil.queryFriend(msg.getSenderID()+"");
+                    intent.putExtra("friend",friend);
                     PendingIntent pendingIntent = PendingIntent.getActivity(getCurrentActivity(),id,intent, PendingIntent.FLAG_UPDATE_CURRENT);
                     Notification.Builder build = new Notification.Builder(getCurrentActivity())
-                            .setContentTitle("新消息")
+                            .setContentTitle(friend.getFriendName())
                             .setContentText(msg.getContent())
                             .setSmallIcon(R.drawable.ic_notifications_white_36dp)
                             .setContentIntent(pendingIntent)
@@ -159,13 +137,9 @@ public abstract class BaseActivity extends AppCompatActivity {
                     nm.notify(id,notify);
                     id++;
                 }
-
-
             }
         }
 
     }
-
-
 
 }

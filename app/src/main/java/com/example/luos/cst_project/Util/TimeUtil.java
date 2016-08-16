@@ -15,14 +15,14 @@ public class TimeUtil {
 
     public static String getAbsoluteTime(){
         SimpleDateFormat sdf= new SimpleDateFormat("yy/MM/dd HH:mm:ss");
-        return sdf.format(new Date(System.currentTimeMillis()));
+        return sdf.format(new Date());
     }
 
     public static String getRelativeTime(String date){
         Log.i("TimeUtil", "date="+date);
         String time="";
         try {
-            SimpleDateFormat sdf= new SimpleDateFormat("yyMMddHHmmss");
+            SimpleDateFormat sdf= new SimpleDateFormat("yy/MM/dd HH:mm:ss");
             Date dt1=sdf.parse(date);
 
             Calendar cl=Calendar.getInstance();

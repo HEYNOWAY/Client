@@ -25,8 +25,8 @@ public class IChatPresenterCompl extends BaseIPresenter implements IChatPresente
 
     public void saveMessageToDb(ChatMessage message) {
         ContentValues values=new ContentValues();
-        values.put(MsgEntry.SEND_ID, "'"+message.getSendId()+"'");
-        values.put(MsgEntry.RECEVICE_ID, "'"+message.getReceiveId()+"'");
+        values.put(MsgEntry.SEND_ID, message.getSendId());
+        values.put(MsgEntry.RECEVICE_ID, message.getReceiveId());
         values.put(MsgEntry.DIRECTION, message.getDirection());
         values.put(MsgEntry.TYPE, message.getType());
         values.put(MsgEntry.CONTENT, message.getContent());

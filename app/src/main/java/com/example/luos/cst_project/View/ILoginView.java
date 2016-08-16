@@ -11,8 +11,7 @@ import java.util.ArrayList;
  */
 
 public interface ILoginView {
-    void onToastResult(int result);
-    void onClear();
     void setProgressbarVisible(int visibility);
-    void ToFriendListAcivity(ArrayList<DataFrame.User> friends);
+    void makeToast(String text);
+    void onfinish();
 }

@@ -5,6 +5,7 @@ import android.os.Message;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.example.luos.cst_project.Model.Config;
 import com.example.luos.cst_project.Model.DataFrame;
@@ -16,18 +17,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FriendListActivity extends BaseActivity implements IFriendListView {
+    private static final String TAG = "FriendListActivity";
     private FriendListFragment fragment;
-    private User user;
-    IFriendListPresenterCompl compl;
+    private TextView userName;
+    private IFriendListPresenterCompl compl;
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.i(TAG,"onCreate...");
         setContentView(R.layout.activity_friend_list);
-        Intent i = getIntent();
-        user = i.getParcelableExtra(LoginActivity.USERDATA);
-
+        userName = (TextView) findViewById(R.id.user_name);
+        userName.setText(self.getNickName());
         FragmentManager fm = getSupportFragmentManager();
         fragment = new FriendListFragment();
         fm.beginTransaction()
@@ -38,14 +41,17 @@ public class FriendListActivity extends BaseActivity implements IFriendListView 
 
     @Override
     public void processMessage(Message msg) {
-        Log.d("Test_processMessage","FriendsList procemessage()..."+msg.what);
+        Log.i(TAG,"processMessage()...");
         switch (msg.what){
             case Config.SEND_NOTIFICATION:
+                Log.i(TAG,"send notificition...");
                 Bundle bundle = msg.getData();
+                Log.i(TAG,"bundle getData is :"+bundle);
                 ArrayList data = bundle.getParcelableArrayList("msgList");
                 List<DataFrame.PersonalMsg> msgList = (List<DataFrame.PersonalMsg>) data.get(0);
-                Log.d("Test_msgList",msgList.toString());
                 compl.saveMessageToDb(msgList);
+                fragment.initData();
+                fragment.getAdapter().notifyDataSetChanged();
                 sendNotifycation(msgList);
                 break;
             default:

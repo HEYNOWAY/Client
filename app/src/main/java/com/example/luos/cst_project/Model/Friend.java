@@ -4,7 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class Friend implements Parcelable {
-	private String friendID;       //好友ID
+	private int friendID;       //好友ID
 	private String friendName;     //好友名字
 	private String head;           //好友头像路径
 	private String headModifyTime; //头像的时间戳
@@ -18,7 +18,7 @@ public class Friend implements Parcelable {
 	}
 	
 	public Friend(Parcel in){
-	    friendID=in.readString();
+	    friendID=in.readInt();
 	    friendName=in.readString();
 	    head=in.readString();
 	    headModifyTime=in.readString();
@@ -60,11 +60,11 @@ public class Friend implements Parcelable {
 		this.sex = sex;
 	}
 
-	public String getFriendID() {
+	public int getFriendID() {
 		return friendID;
 	}
 
-	public void setFriendID(String friendID) {
+	public void setFriendID(int friendID) {
 		this.friendID = friendID;
 	}
 	public String getFriendName() {
@@ -87,14 +87,19 @@ public class Friend implements Parcelable {
 		this.time = time;
 	}
 
-    @Override
+	@Override
+	public String toString() {
+		return "friend Id is"+friendID;
+	}
+
+	@Override
     public int describeContents() {
         return 0;
     }
 
     @Override
     public void writeToParcel(Parcel out, int flags) {
-        out.writeString(friendID);
+        out.writeInt(friendID);
         out.writeString(friendName);
         out.writeString(head);
         out.writeString(headModifyTime);

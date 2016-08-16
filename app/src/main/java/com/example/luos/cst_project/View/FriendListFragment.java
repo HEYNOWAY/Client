@@ -26,9 +26,8 @@ import java.util.ArrayList;
  */
 
 public class FriendListFragment extends ListFragment {
-    public static final String EXTRA_FRIENDID = "friend_id";
-    public static final String EXTRA_FRIENDNICKNAME = "friend_nickName";
-    public static final String EXTRA_INDEX = "index";
+    public static final String EXTRA_FRIEND= "friend";
+    private static final String TAG = "FriendListFragment";
     private ArrayList<Friend> list;
     private FriendAdapter adapter;
 
@@ -40,27 +39,30 @@ public class FriendListFragment extends ListFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getActivity().setTitle("我的朋友");
-        registerForContextMenu(getListView());
+        Log.i(TAG,"onCreate...");
+//        registerForContextMenu(getListView());
     }
 
 
     @Override
     public void onResume() {
         super.onResume();
+        Log.i(TAG,"onResume()...");
         initData();
     }
 
-    private void initData() {
+    public void initData() {
+        Log.i(TAG,"initData()...");
         User self = BaseIPresenter.getUser();
         DbUtil dbUtil = BaseIPresenter.getDbUtil();
         if(list==null){
-            Log.i("Test_FriendListFragment", "initData self="+ self +" dbUtil="+ dbUtil);
+            Log.i(TAG, "initData self="+ self +" dbUtil="+ dbUtil);
             list=dbUtil.queryFriends(self.getUserID()+"");
             adapter=new FriendAdapter(getActivity(), list);
             setListAdapter(adapter);
         }else{
             list=dbUtil.queryFriends(self.getUserID()+"");
-            Log.i("Tet_FreendListFragment", "回到FriendListActivity,通知数据更新; list.size="+list.size());
+            Log.i(TAG, "回到FriendListActivity,通知数据更新; list.size="+list.size());
             adapter=new FriendAdapter(getActivity(), list);
             setListAdapter(adapter);
             adapter.notifyDataSetChanged();
@@ -69,12 +71,16 @@ public class FriendListFragment extends ListFragment {
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
+        Log.i(TAG,"onListItemClick()...");
         Friend friend = (Friend) getListAdapter().getItem(position);
         Intent i = new Intent(getActivity(), ChatActivity.class);
-        i.putExtra(EXTRA_FRIENDID,friend.getFriendID());
-        i.putExtra(EXTRA_FRIENDNICKNAME,friend.getFriendName());
-        Log.d("Test onListItemClick()",friend.toString());
+        i.putExtra(EXTRA_FRIEND,friend);
+        Log.i(TAG,"friend Id is:"+friend.getFriendID()+ " friend nickName is:"+friend.getFriendName());
         startActivity(i);
+    }
+
+    public FriendAdapter getAdapter(){
+        return adapter;
     }
 
 

@@ -23,7 +23,7 @@
             android:layout_height="wrap_content"
             android:layout_toRightOf="@id/headImg"
             android:text="好友"
-            android:textColor="@color/white"
+            android:textColor="@color/black"
             android:layout_centerInParent="true"
             />
 

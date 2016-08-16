@@ -5,5 +5,5 @@ package com.example.luos.cst_project.View;
  */
 
 public interface IChatView {
-    void sendChatMsg(int type, String content);
+    boolean sendChatMsg(int type, String content);
 }

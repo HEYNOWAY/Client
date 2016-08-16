@@ -3,6 +3,7 @@ package com.example.luos.cst_project.Presenter;
 
 import android.content.ContentValues;
 import android.util.Log;
+import android.view.View;
 
 
 import com.example.luos.cst_project.Model.Config;
@@ -22,6 +23,7 @@ import java.util.List;
  */
 
 public class ILoginPresenterCompl extends BaseIPresenter implements ILoginPresenter {
+    private static final String TAG = "ILoginPresenterCompl";
     private static ILoginView iLoginView;
     private NetWork netWork;
 
@@ -29,17 +31,18 @@ public class ILoginPresenterCompl extends BaseIPresenter implements ILoginPresen
     public ILoginPresenterCompl(ILoginView iLoginView){
         this.iLoginView = iLoginView;
         netWork = NetWork.getInstance();
-        Log.d("Test_newWork","a network instance");
         netWork.start();
-        Log.d("Test_newWork","start netWork");
+        Log.i(TAG, "netWork.strat()....");
     }
 
     @Override
     public void doLogin(String username, String password) {
         boolean isLogin = netWork.login(username,password);
         if(!isLogin){
-           iLoginView.onToastResult(Config.LOGIN_FAILED);
-            Log.d("Test_doLogin","Failed!");
+            iLoginView.makeToast("用户名或密码错误...");
+            iLoginView.setProgressbarVisible(View.INVISIBLE);
+        } else {
+            iLoginView.makeToast("登陆成功");
         }
     }
 
@@ -51,14 +54,14 @@ public class ILoginPresenterCompl extends BaseIPresenter implements ILoginPresen
 
     public static void setUser(User user){
         BaseActivity.self = user;
-        Log.d("Test_setUser",BaseActivity.self.getUserID()+"");
     }
 
     public void saveMessageToDb(List<DataFrame.PersonalMsg> msgList) {
+        Log.i(TAG, "saveMessageToDb()....");
         ContentValues values = new ContentValues();
         for (DataFrame.PersonalMsg msg:msgList) {
-            values.put(MsgEntry.SEND_ID,msg.getSenderID());
-            values.put(MsgEntry.RECEVICE_ID,msg.getRecverID());
+            values.put(MsgEntry.SEND_ID,msg.getRecverID());
+            values.put(MsgEntry.RECEVICE_ID,msg.getSenderID());
             values.put(MsgEntry.TYPE,msg.getMsgType());
             values.put(MsgEntry.CONTENT,msg.getContent());
             values.put(MsgEntry.TIME,msg.getSendTime());

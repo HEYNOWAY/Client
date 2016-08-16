@@ -12,13 +12,18 @@ import com.example.luos.cst_project.View.BaseActivity;
  */
 
 public class BaseIPresenter {
+    private static final String TAG = "BaseIPresenter";
 
     public static void sendEmptyMessage(int what) {
         BaseActivity.sendEmptyMessage(what);
+        Log.i(TAG, "Activity is"+BaseActivity.getCurrentActivity());
+        Log.i(TAG, "send Empty message is: "+what);
     }
 
     public static void sendMessage(Message msg){
         BaseActivity.sendMessage(msg);
+        Log.i(TAG, "Activity is"+BaseActivity.getCurrentActivity());
+        Log.i(TAG, "send Empty message is: "+msg);
     }
 
     public static DbUtil getDbUtil(){

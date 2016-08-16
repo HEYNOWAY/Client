@@ -67,8 +67,8 @@ public class FriendAdapter extends BaseAdapter {
         }
 
         Friend friend=list.get(position);
+        Log.i(TAG,"friend is:"+friend);
         holder.name.setText(friend.getFriendName());
-
         int type=friend.getType();
         if(type== Config.MESSAGE_TYPE_TXT){
             holder.content.setText(friend.getContent());

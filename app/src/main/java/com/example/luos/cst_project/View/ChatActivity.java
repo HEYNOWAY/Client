@@ -8,11 +8,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.luos.cst_project.Adapter.ChattingAdapter;
 import com.example.luos.cst_project.Model.Config;
 import com.example.luos.cst_project.Model.ChatMessage;
+import com.example.luos.cst_project.Model.Friend;
 import com.example.luos.cst_project.Presenter.IChatPresenter;
 import com.example.luos.cst_project.Presenter.IChatPresenterCompl;
 import com.example.luos.cst_project.R;
@@ -37,29 +39,34 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener ,
     private int friendID;
     private String friendNickName;
 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Log.i(TAG,"onCreate()...");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.chat_layout);
         Init();
     }
 
+
     private void Init() {
+        Log.i(TAG,"onInit()...");
         mEditText = (EditText) findViewById(R.id.text_editor);
         mSend = (Button) findViewById(R.id.send_button);
         mlistView = (ListView) findViewById(R.id.chatting_history_lv);
         mNickName = (TextView) findViewById(R.id.nickName);
 
+        Intent intent = getIntent();
+        Friend friend = intent.getParcelableExtra(FriendListFragment.EXTRA_FRIEND);
+        Log.i(TAG,"get friend is "+friend);
+        friendNickName = friend.getFriendName();
+        friendID = friend.getFriendID();
         setAdapterForThis();
 
+        iChatPresenter = new IChatPresenterCompl(this);
+        mNickName.setText(friendNickName);
         mSend.setOnClickListener(this);
 
-        iChatPresenter = new IChatPresenterCompl(this);
-
-        Intent intent = getIntent();
-        friendNickName = intent.getStringExtra(FriendListFragment.EXTRA_FRIENDNICKNAME);
-        friendID = intent.getIntExtra(FriendListFragment.EXTRA_FRIENDID,0);
-        mNickName.setText(friendNickName);
     }
 
     private void setAdapterForThis(){
@@ -72,6 +79,7 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener ,
     }
 
     public void initMessages(){
+        Log.i(TAG,"initMessages()...selfId is:"+self.getUserID()+", friendId is:"+friendID);
         msgList = dbUtil.queryMessages(self.getUserID()+"", friendID+"");
         Log.i(TAG, "messages="+msgList);
         if(msgList!=null){
@@ -102,18 +110,21 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener ,
     }
 
     @Override
-    public void sendChatMsg(int type, String content) {
-        Log.d("Test_sendChatMsg","sendChatmsg()...");
+    public boolean sendChatMsg(int type, String content) {
+        Log.i(TAG,"sendChatMsg()...");
         String time = TimeUtil.getAbsoluteTime();
         int userId = self.getUserID();
         boolean result = iChatPresenter.sendChatMessage(userId,friendID,content,time);
         if(result==true){
             ChatMessage message = new ChatMessage(userId,friendID,time,content,type,Config.MESSAGE_TO);
             msgList.add(message);
+            Log.i(TAG,"send message is:"+message);
             iChatPresenter.saveMessageToDb(message);
             adapter.notifyDataSetChanged();
+            return true;
         } else {
             makeTextShort("消息发送失败");
+            return false;
         }
     }
 }

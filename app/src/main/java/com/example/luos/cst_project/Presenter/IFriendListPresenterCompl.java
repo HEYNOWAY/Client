@@ -22,6 +22,7 @@ import java.util.List;
  */
 
 public class IFriendListPresenterCompl extends BaseIPresenter{
+    private static final String TAG = "IFriendListPresenter";
     private static IFriendListView iFriendListView;
 
     public IFriendListPresenterCompl(IFriendListView iFriendListView){
@@ -29,10 +30,11 @@ public class IFriendListPresenterCompl extends BaseIPresenter{
     }
 
     public void saveMessageToDb(List<DataFrame.PersonalMsg> msgList) {
+        Log.i(TAG, "saveMessageToDb()....");
         ContentValues values = new ContentValues();
         for (DataFrame.PersonalMsg msg:msgList) {
-            values.put(MsgDbContract.MsgEntry.SEND_ID,msg.getSenderID());
-            values.put(MsgDbContract.MsgEntry.RECEVICE_ID,msg.getRecverID());
+            values.put(MsgDbContract.MsgEntry.SEND_ID,msg.getRecverID());
+            values.put(MsgDbContract.MsgEntry.RECEVICE_ID,msg.getSenderID());
             values.put(MsgDbContract.MsgEntry.TYPE,msg.getMsgType());
             values.put(MsgDbContract.MsgEntry.CONTENT,msg.getContent());
             values.put(MsgDbContract.MsgEntry.TIME,msg.getSendTime());

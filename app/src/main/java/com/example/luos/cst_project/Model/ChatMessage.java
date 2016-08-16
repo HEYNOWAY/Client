@@ -81,6 +81,7 @@ public class ChatMessage {
                 "\nSend to "+receiveId+
                 "\nType:"+type+
                 "\n Content:"+content+
-                "\n Time:"+time;
+                "\n Time:"+time+
+                "\n Direction:"+direction;
     }
 }

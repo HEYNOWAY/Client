@@ -28,7 +28,7 @@ import java.util.Vector;
  */
 
 public class NetWork extends Thread {
-
+   private static final String TAG = "NetWork";
    private final int connect = 1;
    private final int running = 2;
    private int state = connect;
@@ -47,10 +47,11 @@ public class NetWork extends Thread {
 
 
    public synchronized static NetWork getInstance(){
-         if(instance==null){
-            instance = new NetWork();
-         }
-         return instance;
+      Log.i(TAG,"getInstance()....");
+      if(instance==null){
+         instance = new NetWork();
+      }
+      return instance;
    }
 
    @Override
@@ -70,27 +71,28 @@ public class NetWork extends Thread {
    private  void connect(){
 
       try {
-         Log.d("Test_socket","start connect");
+         Log.i(TAG,"connect()...start connected");
          socket = new Socket(Contents.SERVER_ID,Contents.PORT);
          state = running;
          dos = new DataOutputStream(socket.getOutputStream());
          dis =new DataInputStream(socket.getInputStream());
       } catch (IOException e) {
          e.printStackTrace();
+         Log.d(TAG,e.toString());
       }
    }
 
    public  void reciveMsg(){
             try {
-               Log.d("Test_recivemsg","executd");
+               Log.i(TAG,"reciveMsg()...start recive messages");
                byte[] buffer = new byte[1024*4];
                int len = dis.read(buffer);
                if(len!=-1){
                   String str = new String(buffer,0,len);
                   recive_msg =DataFrame.Msg.parseFrom(str.getBytes());
-                  Log.d("Test_reciveMsg",recive_msg.toString());
                }
                int type = recive_msg.getUserOpt();
+               Log.i(TAG,"Parsed Message is:"+recive_msg + "/n and result code is:"+type);
                switch (type){
                   case Config.RESULT_LOGIN:
                      handlogin();
@@ -106,7 +108,7 @@ public class NetWork extends Thread {
                }
             } catch (IOException e) {
                e.printStackTrace();
-               Log.d("Test_IOException",e.toString());
+               Log.d(TAG,e.toString());
             }
    }
 
@@ -121,9 +123,9 @@ public class NetWork extends Thread {
 
       try {
            if(dos==null){
+              Log.i(TAG,"login request failed...");
               return false;
            }
-            Log.d("Test_net_login","excuted login!");
             send_msg = msgBuilder
                     .setUserOpt(Config.REQUEST_LOGIN)
                     .setUser(
@@ -134,14 +136,14 @@ public class NetWork extends Thread {
             if(send_msg!=null){
                dos.write(send_msg.toByteArray());
                dos.flush();
-               Log.d("Test_dos", "write:"+send_msg);
+               Log.i(TAG,"write to server:"+send_msg);
                return true;
             } else {
                return false;
             }
       } catch (IOException e) {
          e.printStackTrace();
-         Log.d("Test_dos_Excepiton",  e.toString());
+         Log.i(TAG,e.toString());
          return false;
       }
    }
@@ -150,6 +152,7 @@ public class NetWork extends Thread {
     *  处理登陆结果
     */
    public void handlogin(){
+      Log.i(TAG,"handlogin()... and result is:"+recive_msg.getOptResult());
          if(recive_msg.getOptResult()==true){
             User user = new User();
             String nickName = recive_msg.getUser().getNickName();
@@ -158,13 +161,15 @@ public class NetWork extends Thread {
             user.setUserID(userId);
             String userName = recive_msg.getUser().getUesrName();
             user.setUserName(userName);
+
             BaseIPresenter.setUser(user);
-            Log.d("Test_server_msg","User NickName Id:"+user.getNickName()+user.getUserID());
             BaseIPresenter.sendEmptyMessage(Config.LOGIN_SUCCESS);
             getFriends(userId);
+            Log.i(TAG,"handlogin()...finished");
 
          } else {
             BaseIPresenter.sendEmptyMessage(Config.LOGIN_FAILED);
+            Log.i(TAG,"handlogin()...failed,reason:"+recive_msg.getReceiveResult());
          }
 
    }
@@ -175,21 +180,23 @@ public class NetWork extends Thread {
      */
    public void getFriends(int userId) {
       try {
-         Log.d("Test_getFriends","start...getFriends");
+         Log.i(TAG,"getFriends()...");
          send_msg = msgBuilder
                  .setUserOpt(Config.REQUEST_GET_FRIENDS)
                  .setUser(
                          userBuilder.setUserID(userId)
                  ).build();
          dos.write(send_msg.toByteArray());
-         Log.d("Test_getFriends",send_msg.toString());
+         Log.i(TAG,"write to server:"+send_msg);
          dos.flush();
       } catch (IOException e) {
          e.printStackTrace();
+         Log.d(TAG,e.toString());
       }
    }
 
    public void handletfriend() {
+      Log.i(TAG,"handlefriend()... and result is:"+recive_msg.getOptResult());
       if(recive_msg.getOptResult()==true){
          List<DataFrame.User> friends = recive_msg.getFriendsList();
          ContentValues values=new ContentValues();
@@ -220,7 +227,7 @@ public class NetWork extends Thread {
      * @return
      */
    public boolean sendText(int selfId, int friendId, String content, String time){
-      Log.d("Test_sendText","sendText()"+selfId+" send to "+friendId+" content:"+content+" time:"+time);
+      Log.i(TAG,"sendText()...");
       boolean result = true;
       try {
          send_msg = msgBuilder.setUserOpt(Config.REQUEST_SEND_TXT)
@@ -231,9 +238,11 @@ public class NetWork extends Thread {
                          .setSendTime(time)).build();
          dos.write(send_msg.toByteArray());
          dos.flush();
+         Log.i(TAG,"write to server:"+send_msg);
       } catch (IOException e) {
          e.printStackTrace();
          result = false;
+         Log.d(TAG,e.toString());
       }
       return result;
    }
@@ -243,34 +252,39 @@ public class NetWork extends Thread {
     */
    public void getOffMsg(int userId){
       try {
-         Log.d("Test_getOffMsg","start...getOffMsg");
+         Log.i(TAG,"getOffMsg()...");
          send_msg = msgBuilder
                  .setUserOpt(Config.REQUEST_GET_OFFLINE_MSG)
                  .setUser(
                          userBuilder.setUserID(userId)
                  ).build();
          dos.write(send_msg.toByteArray());
-         Log.d("Test_getOffMsg",send_msg.toString());
+         Log.i(TAG,"write to server:"+send_msg);
          dos.flush();
       } catch (IOException e) {
          e.printStackTrace();
+         Log.d(TAG,e.toString());
       }
    }
 
    private void handleGetOffLineMsg() {
-      Log.d("Test_HandleMsg","strart handleGetOffLineMsg()....");
+      Log.i(TAG,"handleGetoffLineMsg()...");
+      Message message = Message.obtain();
       if(recive_msg.getOptResult()==true){
          List<DataFrame.PersonalMsg> msgList = recive_msg.getPersonalMsgList();
          ArrayList list = new ArrayList();
          list.add(msgList);
-         Message message = Message.obtain();
+
          Bundle bundle = new Bundle();
          bundle.putParcelableArrayList("msgList",list);
          message.what = Config.SEND_NOTIFICATION;
          message.setData(bundle);
-         BaseIPresenter.sendMessage(message);
-         Log.d("Test_HandleMsg", BaseActivity.getCurrentActivity().toString()+": "+message);
 
+         BaseIPresenter.sendMessage(message);
+         Log.i(TAG,"current activity :"+BaseActivity.getCurrentActivity());
+         Log.i(TAG,"getOffmsg is:"+msgList);
+      } else {
+         message.what = Config.SEND_NOTIFICATION;
       }
    }
 
