@@ -135,6 +135,7 @@ public class LoginActivity extends BaseActivity implements ILoginView,View.OnCli
             case Config.LOGIN_FAILED:
                 Log.i(TAG,"login failed...");
                 setProgressbarVisible(View.INVISIBLE);
+                makeToast("用户名或密码错误");
                 onClear();
                 break;
             case Config.SEND_NOTIFICATION:
@@ -165,10 +166,9 @@ public class LoginActivity extends BaseActivity implements ILoginView,View.OnCli
         progressbar.setVisibility(visibility);
     }
 
-
     @Override
-    public void onfinish() {
-        Log.i(TAG,"onfinish()....");
-        onfinish();
+    protected void onStop() {
+        super.onStop();
+        finish();
     }
 }

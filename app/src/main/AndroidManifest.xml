@@ -12,7 +12,8 @@
         android:theme="@style/AppTheme">
         <activity android:name=".View.LoginActivity"></activity>
         <activity android:name=".View.FriendListActivity" />
-        <activity android:name=".View.ChatActivity"/>
+        <activity android:name=".View.ChatActivity"
+            android:launchMode="singleTop"/>
         <activity android:name=".View.WelcomActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -19,7 +19,7 @@ import java.util.ArrayList;
  */
 
 public class DbUtil extends SQLiteOpenHelper {
-    public static final int DATABASE_VERSION = 28;
+    public static final int DATABASE_VERSION = 36;
     public static final String DATABASE_NAME = "Message.db";
     private static final String TAG = "DbUtil";
     private static final String SQL_DELETE_FRIENDS =

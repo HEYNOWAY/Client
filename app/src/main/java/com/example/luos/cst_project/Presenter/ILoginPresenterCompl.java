@@ -39,10 +39,8 @@ public class ILoginPresenterCompl extends BaseIPresenter implements ILoginPresen
     public void doLogin(String username, String password) {
         boolean isLogin = netWork.login(username,password);
         if(!isLogin){
-            iLoginView.makeToast("用户名或密码错误...");
+            iLoginView.makeToast("网络不可用...");
             iLoginView.setProgressbarVisible(View.INVISIBLE);
-        } else {
-            iLoginView.makeToast("登陆成功");
         }
     }
 

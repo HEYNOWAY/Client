@@ -4,14 +4,14 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class Friend implements Parcelable {
-	private int friendID;       //好友ID
-	private String friendName;     //好友名字
-	private String head;           //好友头像路径
-	private String headModifyTime; //头像的时间戳
+	private int friendID;
+	private String friendName;
+	private String head;
+	private String headModifyTime;
 	private String sex;
-	private int type;		     //最后一条消息类型
-	private String content;      //最后一条信息的内容
-	private String time;         //最后一条信息的时间
+	private int type;
+	private String content;
+	private String time;
 	
 	public Friend(){
 		

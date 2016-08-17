@@ -67,6 +67,8 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener ,
         mNickName.setText(friendNickName);
         mSend.setOnClickListener(this);
 
+        registerForContextMenu(mlistView);
+
     }
 
     private void setAdapterForThis(){

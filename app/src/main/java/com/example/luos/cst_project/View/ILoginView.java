@@ -13,5 +13,4 @@ import java.util.ArrayList;
 public interface ILoginView {
     void setProgressbarVisible(int visibility);
     void makeToast(String text);
-    void onfinish();
 }

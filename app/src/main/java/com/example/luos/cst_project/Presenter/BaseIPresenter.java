@@ -1,10 +1,12 @@
 package com.example.luos.cst_project.Presenter;
 
+import android.content.Context;
 import android.os.Message;
 import android.util.Log;
 
 import com.example.luos.cst_project.Model.User;
 import com.example.luos.cst_project.Util.DbUtil;
+import com.example.luos.cst_project.Util.NetWork;
 import com.example.luos.cst_project.View.BaseActivity;
 
 /**
@@ -14,6 +16,8 @@ import com.example.luos.cst_project.View.BaseActivity;
 public class BaseIPresenter {
     private static final String TAG = "BaseIPresenter";
 
+    public BaseIPresenter (){
+    }
     public static void sendEmptyMessage(int what) {
         BaseActivity.sendEmptyMessage(what);
         Log.i(TAG, "Activity is"+BaseActivity.getCurrentActivity());
@@ -36,6 +40,18 @@ public class BaseIPresenter {
 
     public static void setUser(User user){
         BaseActivity.setSelf(user);
+    }
+
+    public void stopWork(){
+        NetWork.getInstance().setOnWork(false);
+    }
+
+    public void setInstanceNull(){
+        NetWork.getInstance().setInstanceNull();
+    }
+
+    public void exitRequest(int userId){
+        NetWork.getInstance().sendExitRequest(userId);
     }
 
 }

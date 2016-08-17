@@ -2,11 +2,14 @@ package com.example.luos.cst_project.View;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
@@ -21,6 +24,7 @@ import android.widget.Toast;
 import com.example.luos.cst_project.Model.DataFrame;
 import com.example.luos.cst_project.Model.Friend;
 import com.example.luos.cst_project.Model.User;
+import com.example.luos.cst_project.Presenter.BaseIPresenter;
 import com.example.luos.cst_project.R;
 import com.example.luos.cst_project.Util.DbUtil;
 import com.example.luos.cst_project.Util.MsgDbContract.MsgEntry;
@@ -36,9 +40,10 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected static LinkedList<BaseActivity> queue = new LinkedList<BaseActivity>();
     public static ArrayList<DataFrame.User> friends;
     private static final String TAG="WoliaoBaseActivity";
-
+    final int EXIT_DIALOG=0x12;
     protected static DbUtil dbUtil;
     public  static User self = new User();
+    private BaseIPresenter iPresenter = new BaseIPresenter();
     private static Handler handler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
@@ -80,12 +85,9 @@ public abstract class BaseActivity extends AppCompatActivity {
         BaseActivity.self = self;
     }
 
-
-
     public void makeTextShort(String text) {
         Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
     }
-
 
     public static BaseActivity getCurrentActivity(){
         return queue.getLast();
@@ -107,10 +109,79 @@ public abstract class BaseActivity extends AppCompatActivity {
     public void onBackPressed() {
         Log.i(TAG, "onBackPressed().... Activity number="+queue.size());
         if(queue.size()==1){	//当前Activity是最后一个Activity了
-//            showDialog(EXIT_DIALOG);
+            showDialog(EXIT_DIALOG);
         }else{
             queue.getLast().finish();
         }
+    }
+
+    public void exit() {
+        //关闭Socket连接、输入输出流
+       iPresenter.stopWork();
+        iPresenter.setInstanceNull();
+
+        //关闭数据库、MediaPlayer
+        if(dbUtil!=null){
+            dbUtil=null;
+        }
+
+        //销毁Activity
+        while (queue.size() > 0)
+            queue.getLast().finish();
+    }
+
+    @Override
+    protected Dialog onCreateDialog(int id) {
+        AlertDialog.Builder builder=new AlertDialog.Builder(this);
+        Log.i(TAG, "dialog id="+id);
+        switch(id){
+            case EXIT_DIALOG:{
+                Log.i(TAG, "要弹出的是退出提醒对话框");
+                builder.setMessage("真的要退出？")
+                        .setPositiveButton("确定", new DialogInterface.OnClickListener(){
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                //向服务器发送“退出”请求
+                                iPresenter.exitRequest(self.getUserID());
+
+                                //关闭到服务器的Socket连接，输入流、输出流
+                                exit();
+                            }
+                        })
+                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                            }
+                        });
+            }
+            break;
+        }
+        AlertDialog dialog=builder.create();
+        Log.i(TAG, "dialog="+dialog);
+        return dialog;
+    }
+
+    private void showExitDialog(){
+        AlertDialog.Builder builder=new AlertDialog.Builder(getApplicationContext());
+        builder.setMessage("确定退出？")
+                .setPositiveButton("确定", new DialogInterface.OnClickListener(){
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //向服务器发送“退出”请求
+                        iPresenter.exitRequest(self.getUserID());
+
+                        //关闭到服务器的Socket连接，输入流、输出流
+                        exit();
+                    }
+                })
+                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+        builder.create().show();
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)

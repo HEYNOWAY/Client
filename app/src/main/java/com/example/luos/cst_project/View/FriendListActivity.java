@@ -28,6 +28,7 @@ public class FriendListActivity extends BaseActivity implements IFriendListView 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.i(TAG,"onCreate...");
+
         setContentView(R.layout.activity_friend_list);
         userName = (TextView) findViewById(R.id.user_name);
         userName.setText(self.getNickName());

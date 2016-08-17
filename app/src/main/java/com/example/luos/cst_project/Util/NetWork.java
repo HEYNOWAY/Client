@@ -68,6 +68,16 @@ public class NetWork extends Thread {
       }
    }
 
+
+   //程序退出时的清理工作
+   public void setOnWork(boolean flag){
+      onWork = flag;
+   }
+
+   public void setInstanceNull(){
+      instance=null;
+   }
+
    private  void connect(){
 
       try {
@@ -92,7 +102,6 @@ public class NetWork extends Thread {
                   recive_msg =DataFrame.Msg.parseFrom(str.getBytes());
                }
                int type = recive_msg.getUserOpt();
-               Log.i(TAG,"Parsed Message is:"+recive_msg + "/n and result code is:"+type);
                switch (type){
                   case Config.RESULT_LOGIN:
                      handlogin();
@@ -211,7 +220,7 @@ public class NetWork extends Thread {
             values.put(FriendsEntry.FRIEND_ID, friendId);
             values.put(FriendsEntry.NICKNAME, nickName);
 
-            BaseIPresenter.getDbUtil().insertFriend(values);
+//            BaseIPresenter.getDbUtil().insertFriend(values);
          }
       } else if(recive_msg.getOptResult()==false){
          //handle 返回界面处理
@@ -267,7 +276,7 @@ public class NetWork extends Thread {
       }
    }
 
-   private void handleGetOffLineMsg() {
+   public void handleGetOffLineMsg() {
       Log.i(TAG,"handleGetoffLineMsg()...");
       Message message = Message.obtain();
       if(recive_msg.getOptResult()==true){
@@ -285,6 +294,23 @@ public class NetWork extends Thread {
          Log.i(TAG,"getOffmsg is:"+msgList);
       } else {
          message.what = Config.SEND_NOTIFICATION;
+      }
+   }
+
+   public void sendExitRequest(int userId){
+      try {
+         Log.i(TAG,"getOffMsg()...");
+         send_msg = msgBuilder
+                 .setUserOpt(Config.REQUEST_EXIT)
+                 .setUser(
+                         userBuilder.setUserID(userId)
+                 ).build();
+         dos.write(send_msg.toByteArray());
+         Log.i(TAG,"write to server:"+send_msg);
+         dos.flush();
+      } catch (IOException e) {
+         e.printStackTrace();
+         Log.d(TAG,e.toString());
       }
    }
 
