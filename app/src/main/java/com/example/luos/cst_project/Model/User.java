@@ -61,7 +61,7 @@ public class User implements Parcelable {
 
     }
 
-    public static final Parcelable.Creator<User> CREATOR= new Parcelable.Creator<User>(){
+    public static final Parcelable.Creator<User> CREATOR = new Parcelable.Creator<User>() {
 
         @Override
         public User createFromParcel(Parcel source) {

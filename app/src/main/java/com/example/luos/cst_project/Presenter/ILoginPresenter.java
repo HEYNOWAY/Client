@@ -9,7 +9,9 @@ import java.util.List;
  */
 
 public interface ILoginPresenter {
-    void doLogin(String username,String password);
+    void doLogin(String username, String password);
+
     void getOffMsg(int userId);
+
     void saveMessageToDb(List<DataFrame.PersonalMsg> msgList);
 }

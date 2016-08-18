@@ -11,6 +11,7 @@ import com.example.luos.cst_project.R;
 public class WelcomActivity extends AppCompatActivity {
 
     private Handler mHandler;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,13 +28,13 @@ public class WelcomActivity extends AppCompatActivity {
 
             public void run() {
                 // 进入登录页面
-                goLoginActivity();
+                goToLoginActivity();
             }
         }, 1000);
     }
 
-    private void goLoginActivity() {
-        Intent intent = new Intent(WelcomActivity.this,LoginActivity.class);
+    private void goToLoginActivity() {
+        Intent intent = new Intent(WelcomActivity.this, LoginActivity.class);
         startActivity(intent);
         finish();
     }

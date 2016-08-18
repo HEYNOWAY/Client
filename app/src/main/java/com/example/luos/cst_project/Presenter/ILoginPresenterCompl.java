@@ -28,7 +28,7 @@ public class ILoginPresenterCompl extends BaseIPresenter implements ILoginPresen
     private NetWork netWork;
 
 
-    public ILoginPresenterCompl(ILoginView iLoginView){
+    public ILoginPresenterCompl(ILoginView iLoginView) {
         this.iLoginView = iLoginView;
         netWork = NetWork.getInstance();
         netWork.start();
@@ -37,8 +37,8 @@ public class ILoginPresenterCompl extends BaseIPresenter implements ILoginPresen
 
     @Override
     public void doLogin(String username, String password) {
-        boolean isLogin = netWork.login(username,password);
-        if(!isLogin){
+        boolean isLogin = netWork.login(username, password);
+        if (!isLogin) {
             iLoginView.makeToast("网络不可用...");
             iLoginView.setProgressbarVisible(View.INVISIBLE);
         }
@@ -49,21 +49,17 @@ public class ILoginPresenterCompl extends BaseIPresenter implements ILoginPresen
         netWork.getOffMsg(LoginActivity.self.getUserID());
     }
 
-
-    public static void setUser(User user){
-        BaseActivity.self = user;
-    }
-
+    @Override
     public void saveMessageToDb(List<DataFrame.PersonalMsg> msgList) {
         Log.i(TAG, "saveMessageToDb()....");
         ContentValues values = new ContentValues();
-        for (DataFrame.PersonalMsg msg:msgList) {
-            values.put(MsgEntry.SEND_ID,msg.getRecverID());
-            values.put(MsgEntry.RECEVICE_ID,msg.getSenderID());
-            values.put(MsgEntry.TYPE,msg.getMsgType());
-            values.put(MsgEntry.CONTENT,msg.getContent());
-            values.put(MsgEntry.TIME,msg.getSendTime());
-            values.put(MsgEntry.DIRECTION,Config.MESSAGE_FROM);
+        for (DataFrame.PersonalMsg msg : msgList) {
+            values.put(MsgEntry.SEND_ID, msg.getRecverID());
+            values.put(MsgEntry.RECEVICE_ID, msg.getSenderID());
+            values.put(MsgEntry.TYPE, msg.getMsgType());
+            values.put(MsgEntry.CONTENT, msg.getContent());
+            values.put(MsgEntry.TIME, msg.getSendTime());
+            values.put(MsgEntry.DIRECTION, Config.MESSAGE_FROM);
             getDbUtil().insertMessage(values);
         }
     }

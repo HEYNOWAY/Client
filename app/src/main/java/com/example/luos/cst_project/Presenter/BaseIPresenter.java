@@ -16,41 +16,42 @@ import com.example.luos.cst_project.View.BaseActivity;
 public class BaseIPresenter {
     private static final String TAG = "BaseIPresenter";
 
-    public BaseIPresenter (){
+    public BaseIPresenter() {
     }
+
     public static void sendEmptyMessage(int what) {
         BaseActivity.sendEmptyMessage(what);
-        Log.i(TAG, "Activity is"+BaseActivity.getCurrentActivity());
-        Log.i(TAG, "send Empty message is: "+what);
+        Log.i(TAG, "Activity is" + BaseActivity.getCurrentActivity());
+        Log.i(TAG, "send Empty message is: " + what);
     }
 
-    public static void sendMessage(Message msg){
+    public static void sendMessage(Message msg) {
         BaseActivity.sendMessage(msg);
-        Log.i(TAG, "Activity is"+BaseActivity.getCurrentActivity());
-        Log.i(TAG, "send Empty message is: "+msg);
+        Log.i(TAG, "Activity is" + BaseActivity.getCurrentActivity());
+        Log.i(TAG, "send Empty message is: " + msg);
     }
 
-    public static DbUtil getDbUtil(){
+    public static DbUtil getDbUtil() {
         return BaseActivity.getDbUtil();
     }
 
-    public static User getUser(){
-        return BaseActivity.getSelf();
+    public static User getUser() {
+        return BaseActivity.self;
     }
 
     public static void setUser(User user){
-        BaseActivity.setSelf(user);
+        BaseActivity.self = user;
     }
 
-    public void stopWork(){
+    public void stopWork() {
         NetWork.getInstance().setOnWork(false);
     }
 
-    public void setInstanceNull(){
+    public void setInstanceNull() {
         NetWork.getInstance().setInstanceNull();
     }
 
-    public void exitRequest(int userId){
+    public void exitRequest(int userId) {
         NetWork.getInstance().sendExitRequest(userId);
     }
 

@@ -13,11 +13,12 @@ public class ChatMessage {
     private String time;
     private String content;
 
-    public ChatMessage(){
+    public ChatMessage() {
 
     }
 
-    public ChatMessage(int sendId,int receiveId,  String time, String content, int type, int direction) {
+    public ChatMessage(int sendId, int receiveId, String time, String content, int type, int
+            direction) {
         this.receiveId = receiveId;
         this.sendId = sendId;
         this.time = time;
@@ -77,11 +78,11 @@ public class ChatMessage {
 
     @Override
     public String toString() {
-        return "From: "+sendId+
-                "\nSend to "+receiveId+
-                "\nType:"+type+
-                "\n Content:"+content+
-                "\n Time:"+time+
-                "\n Direction:"+direction;
+        return "From: " + sendId +
+                "\nSend to " + receiveId +
+                "\nType:" + type +
+                "\n Content:" + content +
+                "\n Time:" + time +
+                "\n Direction:" + direction;
     }
 }

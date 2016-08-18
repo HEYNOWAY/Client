@@ -8,9 +8,10 @@ import android.provider.BaseColumns;
 
 public final class MsgDbContract {
 
-    public MsgDbContract(){}
+    public MsgDbContract() {
+    }
 
-    public static abstract class MsgEntry implements BaseColumns{
+    public static abstract class MsgEntry implements BaseColumns {
         public static final String TABLE_NAME = "message";
         public static final String SEND_ID = "send_id";
         public static final String RECEVICE_ID = "recevice_id";

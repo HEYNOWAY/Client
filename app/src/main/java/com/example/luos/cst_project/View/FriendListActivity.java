@@ -23,31 +23,43 @@ public class FriendListActivity extends BaseActivity implements IFriendListView 
     private IFriendListPresenterCompl compl;
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.i(TAG,"onCreate...");
-
+        Log.i(TAG, "onCreate...");
         setContentView(R.layout.activity_friend_list);
+        init();
+    }
+
+    private void init() {
         userName = (TextView) findViewById(R.id.user_name);
+
         userName.setText(self.getNickName());
+        setFragment();
+        setPresenter();
+    }
+
+    private void setFragment() {
         FragmentManager fm = getSupportFragmentManager();
         fragment = new FriendListFragment();
         fm.beginTransaction()
-                .add(R.id.activity_friend_list,fragment)
+                .add(R.id.activity_friend_list, fragment)
                 .commit();
+    }
+
+    private void setPresenter() {
         compl = new IFriendListPresenterCompl(this);
     }
 
+
     @Override
     public void processMessage(Message msg) {
-        Log.i(TAG,"processMessage()...");
-        switch (msg.what){
+        Log.i(TAG, "processMessage()...");
+        switch (msg.what) {
             case Config.SEND_NOTIFICATION:
-                Log.i(TAG,"send notificition...");
+                Log.i(TAG, "send notificition...");
                 Bundle bundle = msg.getData();
-                Log.i(TAG,"bundle getData is :"+bundle);
+                Log.i(TAG, "bundle getData is :" + bundle);
                 ArrayList data = bundle.getParcelableArrayList("msgList");
                 List<DataFrame.PersonalMsg> msgList = (List<DataFrame.PersonalMsg>) data.get(0);
                 compl.saveMessageToDb(msgList);
@@ -55,19 +67,7 @@ public class FriendListActivity extends BaseActivity implements IFriendListView 
                 fragment.getAdapter().notifyDataSetChanged();
                 sendNotifycation(msgList);
                 break;
-            default:
-                break;
-
         }
     }
 
-    @Override
-    public ArrayList<DataFrame.User> getFriendList() {
-        return friends;
-    }
-
-    @Override
-    public void setFriendList(ArrayList<DataFrame.User> friends) {
-        this.friends = friends;
-    }
 }
