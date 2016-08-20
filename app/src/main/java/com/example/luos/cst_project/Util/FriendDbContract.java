@@ -7,8 +7,7 @@ import android.provider.BaseColumns;
  */
 
 public class FriendDbContract {
-    public FriendDbContract() {
-    }
+    public FriendDbContract(){}
 
     public static abstract class FriendsEntry implements BaseColumns {
         public static final String TABLE_NAME = "friend";

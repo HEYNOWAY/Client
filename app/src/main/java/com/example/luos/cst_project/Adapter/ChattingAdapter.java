@@ -60,58 +60,54 @@ public class ChattingAdapter extends BaseAdapter {
 
         ViewHolder holder;
         ChatMessage message = chatMessages.get(position);
-        Log.i(TAG, message.toString());
-        int direction = message.getDirection();   //direction: to or from ?
+        Log.i(TAG,message.toString());
+        int direction=message.getDirection();   //direction: to or from ?
         int type = message.getType();
-        if (convertView == null) {
+        if(convertView==null){
             holder = new ViewHolder();
-            convertView = LayoutInflater.from(context).inflate(R.layout.msg_item, null);
+            convertView = LayoutInflater.from(context).inflate(R.layout.msg_item,null);
             holder.leftLayout = (LinearLayout) convertView.findViewById(R.id.left_layout);
             holder.rightLayout = (LinearLayout) convertView.findViewById(R.id.right_layout);
-            holder.leftChattingTime = (TextView) convertView.findViewById(R.id
-                    .left_chatting_time_tv);
-            holder.rightChattingTime = (TextView) convertView.findViewById(R.id
-                    .right_chatting_time_tv);
-            holder.leftChattingContent = (TextView) convertView.findViewById(R.id
-                    .left_chatting_content_itv);
-            holder.rightChattingConent = (TextView) convertView.findViewById(R.id
-                    .right_chatting_content_itv);
+            holder.leftChattingTime = (TextView) convertView.findViewById(R.id.left_chatting_time_tv);
+            holder.rightChattingTime = (TextView) convertView.findViewById(R.id.right_chatting_time_tv);
+            holder.leftChattingContent = (TextView) convertView.findViewById(R.id.left_chatting_content_itv);
+            holder.rightChattingConent = (TextView) convertView.findViewById(R.id.right_chatting_content_itv);
 
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
-        if (direction == Config.MESSAGE_FROM) {
+        if(direction==Config.MESSAGE_FROM){
             holder.leftLayout.setVisibility(View.VISIBLE);
             holder.rightLayout.setVisibility(View.GONE);
-            String time = message.getTime();
-            if (time != null && !"".equals(time)) {
-                String relativeTime = TimeUtil.getRelativeTime(time);
-                Log.d(TAG, "relativeTime=" + relativeTime);
+            String time=message.getTime();
+            if(time!=null && !"".equals(time)){
+                String relativeTime= TimeUtil.getRelativeTime(time);
+                Log.d(TAG, "relativeTime="+relativeTime);
                 holder.leftChattingTime.setText(relativeTime);
             }
             switch (type) {
                 case Config.MESSAGE_TYPE_TXT:    //处理"文本"
-                    String content = message.getContent();
-                    Log.i(TAG, "getView():MESAGE_TYPE_TXT, content=" + content);
+                    String content=message.getContent();
+                    Log.i(TAG, "getView():MESAGE_TYPE_TXT, content="+content);
                     holder.leftChattingContent.setText(content);
                     break;
                 default:
                     break;
             }
-        } else if (direction == Config.MESSAGE_TO) {
+        } else if(direction==Config.MESSAGE_TO){
             holder.rightLayout.setVisibility(View.VISIBLE);
             holder.leftLayout.setVisibility(View.GONE);
-            String time = message.getTime();
-            if (time != null && !"".equals(time)) {
-                String relativeTime = TimeUtil.getRelativeTime(time);
-                Log.d(TAG, "relativeTime=" + relativeTime);
+            String time=message.getTime();
+            if(time!=null && !"".equals(time)){
+                String relativeTime= TimeUtil.getRelativeTime(time);
+                Log.d(TAG, "relativeTime="+relativeTime);
                 holder.rightChattingTime.setText(relativeTime);
             }
             switch (type) {
                 case Config.MESSAGE_TYPE_TXT:    //处理"文本"
-                    String content = message.getContent();
-                    Log.i(TAG, "getView():MESAGE_TYPE_TXT, content=" + content);
+                    String content=message.getContent();
+                    Log.i(TAG, "getView():MESAGE_TYPE_TXT, content="+content);
                     holder.rightChattingConent.setText(content);
                     break;
                 default:

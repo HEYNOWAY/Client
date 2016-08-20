@@ -27,7 +27,7 @@ import java.util.List;
  * Created by luos on 2016/8/8.
  */
 
-public class ChatActivity extends BaseActivity implements View.OnClickListener, IChatView {
+public class ChatActivity extends BaseActivity implements View.OnClickListener ,IChatView{
     protected static final String TAG = "Test_ChatActivity";
     private List<ChatMessage> msgList = new ArrayList<ChatMessage>();
     private ListView mlistView;
@@ -42,7 +42,7 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Log.i(TAG, "onCreate()...");
+        Log.i(TAG,"onCreate()...");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.chat_layout);
         Init();
@@ -50,7 +50,7 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
 
 
     private void Init() {
-        Log.i(TAG, "onInit()...");
+        Log.i(TAG,"onInit()...");
         mEditText = (EditText) findViewById(R.id.text_editor);
         mSend = (Button) findViewById(R.id.send_button);
         mlistView = (ListView) findViewById(R.id.chatting_history_lv);
@@ -58,7 +58,7 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
 
         Intent intent = getIntent();
         Friend friend = intent.getParcelableExtra(FriendListFragment.EXTRA_FRIEND);
-        Log.i(TAG, "get friend is " + friend);
+        Log.i(TAG,"get friend is "+friend);
         friendNickName = friend.getFriendName();
         friendID = friend.getFriendID();
         setAdapterForThis();
@@ -71,33 +71,38 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
 
     }
 
-    private void setAdapterForThis() {
+    private void setAdapterForThis(){
         initMessages();
-        if (msgList == null) {
-            msgList = new ArrayList<>();
+        if(msgList==null){
+            msgList = new ArrayList<ChatMessage>();
         }
-        adapter = new ChattingAdapter(this, msgList);
+        adapter = new ChattingAdapter(this,msgList);
         mlistView.setAdapter(adapter);
     }
 
-    public void initMessages() {
-        Log.i(TAG, "initMessages()...selfId is:" + self.getUserID() + ", friendId is:" + friendID);
-        msgList = dbUtil.queryMessages(self.getUserID() + "", friendID + "");
-        Log.i(TAG, "messages=" + msgList);
-        if (msgList != null) {
-            Log.i(TAG, "initMessages() messages.size=" + msgList.size());
+    public void initMessages(){
+        Log.i(TAG,"initMessages()...selfId is:"+self.getUserID()+", friendId is:"+friendID);
+        msgList = dbUtil.queryMessages(self.getUserID()+"", friendID+"");
+        Log.i(TAG, "messages="+msgList);
+        if(msgList!=null){
+            Log.i(TAG, "initMessages() messages.size="+msgList.size());
         }
+    }
+
+
+    @Override
+    public void processMessage(Message msg) {
+
     }
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()) {
+        switch (v.getId()){
             case R.id.send_button:
                 String str = mEditText.getText().toString().trim();
-                String sendStr = str.replaceAll("\r", "").replaceAll("\t", "").replaceAll("\n",
-                        "").replaceAll("\f", "");
-                if (str != null && !str.equals("") && sendStr != null) {
-                    sendChatMsg(Config.MESSAGE_TYPE_TXT, sendStr);
+                String sendStr = str.replaceAll("\r", "").replaceAll("\t", "").replaceAll("\n", "").replaceAll("\f", "");
+                if(str!=null&&!str.equals("")&&sendStr!=null){
+                    sendChatMsg(Config.MESSAGE_TYPE_TXT,sendStr);
                     mEditText.setText("");
                 } else {
                     makeTextShort("发送消息不能为空");
@@ -108,14 +113,14 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
 
     @Override
     public boolean sendChatMsg(int type, String content) {
-        Log.i(TAG, "sendChatMsg()...");
+        Log.i(TAG,"sendChatMsg()...");
         String time = TimeUtil.getAbsoluteTime();
-        boolean result = iChatPresenter.sendChatMessage( friendID, content, time);
-        if (result == true) {
-            ChatMessage message = new ChatMessage(self.getUserID(), friendID, time, content, type, Config
-                    .MESSAGE_TO);
+        int userId = self.getUserID();
+        boolean result = iChatPresenter.sendChatMessage(userId,friendID,content,time);
+        if(result==true){
+            ChatMessage message = new ChatMessage(userId,friendID,time,content,type,Config.MESSAGE_TO);
             msgList.add(message);
-            Log.i(TAG, "send message is:" + message);
+            Log.i(TAG,"send message is:"+message);
             iChatPresenter.saveMessageToDb(message);
             adapter.notifyDataSetChanged();
             return true;
@@ -124,10 +129,4 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
             return false;
         }
     }
-
-    @Override
-    public void processMessage(Message msg) {
-
-    }
-
 }

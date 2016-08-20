@@ -26,15 +26,15 @@ import java.util.ArrayList;
  */
 
 public class FriendAdapter extends BaseAdapter {
-    final static String TAG = "FriendAdapter";
+    final static String TAG="FriendAdapter";
     private ArrayList<Friend> list;
     private Context context;
     private LayoutInflater inflater;
     private LinearLayout layout;
 
-    public FriendAdapter(Context context, ArrayList<Friend> list) {
-        this.context = context;
-        this.list = list;
+    public FriendAdapter(Context context, ArrayList<Friend> list){
+        this.context=context;
+        this.list=list;
     }
 
     @Override
@@ -54,31 +54,31 @@ public class FriendAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder holder = null;
-        if (convertView == null) {
-            holder = new ViewHolder();
-            convertView = inflater.from(context).inflate(R.layout.friend_lsit_item, null);
-            holder.name = (TextView) convertView.findViewById(R.id.name);
-            holder.content = (TextView) convertView.findViewById(R.id.content);
-            holder.time = (TextView) convertView.findViewById(R.id.time);
+        ViewHolder holder=null;
+        if(convertView==null){
+            holder=new ViewHolder();
+            convertView=inflater.from(context).inflate(R.layout.friend_lsit_item, null);
+            holder.name=(TextView)convertView.findViewById(R.id.name);
+            holder.content=(TextView)convertView.findViewById(R.id.content);
+            holder.time=(TextView)convertView.findViewById(R.id.time);
             convertView.setTag(holder);
-        } else {
-            holder = (ViewHolder) convertView.getTag();
+        }else{
+            holder=(ViewHolder)convertView.getTag();
         }
 
-        Friend friend = list.get(position);
-        Log.i(TAG, "friend is:" + friend);
+        Friend friend=list.get(position);
+        Log.i(TAG,"friend is:"+friend);
         holder.name.setText(friend.getFriendName());
-        int type = friend.getType();
-        if (type == Config.MESSAGE_TYPE_TXT) {
+        int type=friend.getType();
+        if(type== Config.MESSAGE_TYPE_TXT){
             holder.content.setText(friend.getContent());
-        } else if (type == Config.MESSAGE_TYPE_IMG) {
+        }else if(type==Config.MESSAGE_TYPE_IMG){
             holder.content.setText("[图片]");
-        } else if (type == Config.MESSAGE_TYPE_AUDIO) {
+        }else if(type==Config.MESSAGE_TYPE_AUDIO){
             holder.content.setText("[语音]");
         }
-        String time = friend.getTime();
-        if (time != null && !"".equals(time)) {
+        String time=friend.getTime();
+        if(time!=null && !"".equals(time)){
             holder.time.setText(TimeUtil.getRelativeTime(time));
         }
 
@@ -86,9 +86,9 @@ public class FriendAdapter extends BaseAdapter {
         return convertView;
     }
 
-    static class ViewHolder {
+    static class ViewHolder{
         TextView name;        //昵称
-        TextView content;      //最后一条聊天消息的描述(文本、表情、图片、语音)
-        TextView time;          //最后一次聊天的时间
+        TextView content;	  //最后一条聊天消息的描述(文本、表情、图片、语音)
+        TextView time;		  //最后一次聊天的时间
     }
 }
