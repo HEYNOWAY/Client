@@ -74,7 +74,7 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
     private void setAdapterForThis() {
         initMessages();
         if (msgList == null) {
-            msgList = new ArrayList<ChatMessage>();
+            msgList = new ArrayList<>();
         }
         adapter = new ChattingAdapter(this, msgList);
         mlistView.setAdapter(adapter);
@@ -87,12 +87,6 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
         if (msgList != null) {
             Log.i(TAG, "initMessages() messages.size=" + msgList.size());
         }
-    }
-
-
-    @Override
-    public void processMessage(Message msg) {
-
     }
 
     @Override
@@ -116,10 +110,9 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
     public boolean sendChatMsg(int type, String content) {
         Log.i(TAG, "sendChatMsg()...");
         String time = TimeUtil.getAbsoluteTime();
-        int userId = self.getUserID();
-        boolean result = iChatPresenter.sendChatMessage(userId, friendID, content, time);
+        boolean result = iChatPresenter.sendChatMessage( friendID, content, time);
         if (result == true) {
-            ChatMessage message = new ChatMessage(userId, friendID, time, content, type, Config
+            ChatMessage message = new ChatMessage(self.getUserID(), friendID, time, content, type, Config
                     .MESSAGE_TO);
             msgList.add(message);
             Log.i(TAG, "send message is:" + message);
@@ -131,4 +124,10 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener, 
             return false;
         }
     }
+
+    @Override
+    public void processMessage(Message msg) {
+
+    }
+
 }

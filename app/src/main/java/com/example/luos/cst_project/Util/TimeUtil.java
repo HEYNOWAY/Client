@@ -41,41 +41,52 @@ public class TimeUtil {
             int minute1 = cl.get(Calendar.MINUTE);
             int second1 = cl.get(Calendar.SECOND);
 
-            if (year1 == year2) {
-                if (month1 == month2) {
-                    if (day1 == day2) {
-                        if (hour1 == hour2) {
-                            if (minute1 == minute2) {
-                                time = "刚才";
-                            } else {
-                                time = (minute2 - minute1) + "分钟前";
-                            }
-                        } else if (hour2 - hour1 > 3) {
-                            time = formatTime(hour1, minute1);
-                        } else if (hour2 - hour1 == 1) {
-                            if (minute2 - minute1 > 0) {
-                                time = "1小时前";
-                            } else {
-                                time = (60 + minute2 - minute1) + "分钟前";
-                            }
-                        } else {
-                            time = (hour2 - hour1) + "小时前";
-                        }
-                    } else if (day2 - day1 == 1) {  //昨天
-                        if (hour1 > 12) {
-                            time = (month1 + 1) + "月" + day1 + "日  下午";
-                        } else {
-                            time = (month1 + 1) + "月" + day1 + "日  上午";
-                        }
-                    } else {
-                        time = (month1 + 1) + "月" + day1 + "日";
-                    }
-                } else {
-                    time = (month1 + 1) + "月" + day1 + "日";
-                }
-            } else {
-                time = year1 + "年" + month1 + "月" + day1;
+            //年份不同
+            if (year1 != year2) {
+                return time = year1 + "年" + month1 + "月" + day1;
             }
+
+            //月份不同
+            if (month1 != month2) {
+                return time = (month1 + 1) + "月" + day1 + "日";
+            }
+
+            //天数不同，但相隔大于一天
+            if (day1 != day2 && day2 - day1 >1) {
+                return time = (month1 + 1) + "月" + day1 + "日";
+            }
+
+            //昨天，上午和下午
+            if (day2 - day1 == 1) {
+                if (hour1 > 12) {
+                    return time = (month1 + 1) + "月" + day1 + "日  下午";
+                } else {
+                    return time = (month1 + 1) + "月" + day1 + "日  上午";
+                }
+            }
+
+            //当天，但相隔大于一小时
+            if (hour1 != hour2 && hour2 - hour1 >1) {
+                return time = (hour2 - hour1) + "小时前";
+            }
+
+            //在相隔一小时，但分钟数不同
+            if(hour2 - hour1 == 1){
+                if (minute2 - minute1 > 0) {
+                    return time = "1小时前";
+                } else {
+                    return time = (60 + minute2 - minute1) + "分钟前";
+                }
+            }
+
+            //同一小时内
+            if (minute1 == minute2) {
+                return time = "刚才";
+            } else {
+                return time = (minute2 - minute1) + "分钟前";
+            }
+
+
         } catch (ParseException e) {
             e.printStackTrace();
         }

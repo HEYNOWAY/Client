@@ -2,6 +2,8 @@ package com.example.luos.cst_project.Presenter;
 
 
 import android.content.ContentValues;
+import android.os.Bundle;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
 
@@ -16,6 +18,7 @@ import com.example.luos.cst_project.View.ILoginView;
 import com.example.luos.cst_project.View.LoginActivity;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,20 +28,28 @@ import java.util.List;
 public class ILoginPresenterCompl extends BaseIPresenter implements ILoginPresenter {
     private static final String TAG = "ILoginPresenterCompl";
     private static ILoginView iLoginView;
-    private NetWork netWork;
 
 
     public ILoginPresenterCompl(ILoginView iLoginView) {
         this.iLoginView = iLoginView;
         netWork = NetWork.getInstance();
         netWork.start();
+        netWork.addIPresenter(this);
         Log.i(TAG, "netWork.strat()....");
     }
 
     @Override
     public void doLogin(String username, String password) {
-        boolean isLogin = netWork.login(username, password);
-        if (!isLogin) {
+        Log.d("Test","new stuct...");
+        DataFrame.Msg send_msg = msgBuilder
+                .setUserOpt(Config.REQUEST_LOGIN)
+                .setUser(
+                        userBuilder
+                                .setUesrName(username)
+                                .setUserPwd(password)
+                ).build();
+        boolean success= netWork.writeToSrv(send_msg);
+        if (!success) {
             iLoginView.makeToast("网络不可用...");
             iLoginView.setProgressbarVisible(View.INVISIBLE);
         }
@@ -46,7 +57,15 @@ public class ILoginPresenterCompl extends BaseIPresenter implements ILoginPresen
 
     @Override
     public void getOffMsg(int userId) {
-        netWork.getOffMsg(LoginActivity.self.getUserID());
+        DataFrame.Msg send_msg = msgBuilder
+                .setUserOpt(Config.REQUEST_GET_OFFLINE_MSG)
+                .setUser(
+                        userBuilder.setUserID(userId)
+                ).build();
+        boolean success = netWork.writeToSrv(send_msg);
+        if (!success) {
+            iLoginView.makeToast("获取离线消息失败...");
+        }
     }
 
     @Override
@@ -62,5 +81,51 @@ public class ILoginPresenterCompl extends BaseIPresenter implements ILoginPresen
             values.put(MsgEntry.DIRECTION, Config.MESSAGE_FROM);
             getDbUtil().insertMessage(values);
         }
+    }
+
+    @Override
+    public void onProcess(DataFrame.Msg recive_msg) {
+        switch (recive_msg.getUserOpt()){
+            case Config.RESULT_LOGIN:
+                Log.i(TAG,"handlogin()... and result is:"+recive_msg.getOptResult());
+                if(recive_msg.getOptResult()==true){
+                    User user = new User();
+                    String nickName = recive_msg.getUser().getNickName();
+                    user.setNickName(nickName);
+                    int userId = recive_msg.getUser().getUserID();
+                    user.setUserID(userId);
+                    String userName = recive_msg.getUser().getUesrName();
+                    user.setUserName(userName);
+                    setUser(user);
+                    sendEmptyMessage(Config.LOGIN_SUCCESS);
+                    Log.i(TAG,"handlogin()...finished");
+
+                } else {
+                    sendEmptyMessage(Config.LOGIN_FAILED);
+                    Log.i(TAG,"handlogin()...failed,reason:"+recive_msg.getReceiveResult());
+                }
+                break;
+
+            case Config.RESULT_GET_OFFLINE_MSG:
+                Log.i(TAG,"handleGetoffLineMsg()...");
+                Message message = Message.obtain();
+                if(recive_msg.getOptResult()==true){
+                    List<DataFrame.PersonalMsg> msgList = recive_msg.getPersonalMsgList();
+                    ArrayList list = new ArrayList();
+                    list.add(msgList);
+
+                    Bundle bundle = new Bundle();
+                    bundle.putParcelableArrayList("msgList",list);
+                    message.what = Config.SEND_NOTIFICATION;
+                    message.setData(bundle);
+
+                    sendMessage(message);
+                    Log.i(TAG,"current activity :"+BaseActivity.getCurrentActivity());
+                    Log.i(TAG,"getOffmsg is:"+msgList);
+                }
+                break;
+        }
+
+
     }
 }

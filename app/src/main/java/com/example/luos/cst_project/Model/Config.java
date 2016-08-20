@@ -6,6 +6,10 @@ package com.example.luos.cst_project.Model;
 
 public class Config {
 
+
+    public static final String SERVER_ID = "192.168.1.106";
+    public static final int PORT = 6666;
+
     public static final int MESSAGE_FROM = -2;
     public static final int MESSAGE_TO = -1;
     public static final int MESSAGE_TYPE_TXT = 0;

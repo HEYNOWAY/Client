@@ -4,6 +4,8 @@ import android.content.Context;
 import android.os.Message;
 import android.util.Log;
 
+import com.example.luos.cst_project.Model.Config;
+import com.example.luos.cst_project.Model.DataFrame;
 import com.example.luos.cst_project.Model.User;
 import com.example.luos.cst_project.Util.DbUtil;
 import com.example.luos.cst_project.Util.NetWork;
@@ -13,10 +15,14 @@ import com.example.luos.cst_project.View.BaseActivity;
  * Created by luos on 2016/8/13.
  */
 
-public class BaseIPresenter {
+public class BaseIPresenter implements IPresenter {
     private static final String TAG = "BaseIPresenter";
+    protected NetWork netWork = NetWork.getInstance();
+    protected DataFrame.Msg.Builder msgBuilder = DataFrame.Msg.newBuilder();
+    protected DataFrame.User.Builder userBuilder = DataFrame.User.newBuilder();
 
     public BaseIPresenter() {
+        netWork.addIPresenter(this);
     }
 
     public static void sendEmptyMessage(int what) {
@@ -44,15 +50,25 @@ public class BaseIPresenter {
     }
 
     public void stopWork() {
-        NetWork.getInstance().setOnWork(false);
+        netWork.setOnWork(false);
     }
 
     public void setInstanceNull() {
-        NetWork.getInstance().setInstanceNull();
+        netWork.setInstanceNull();
     }
 
     public void exitRequest(int userId) {
-        NetWork.getInstance().sendExitRequest(userId);
+        DataFrame.Msg send_msg = msgBuilder
+                .setUserOpt(Config.REQUEST_EXIT)
+                .setUser(
+                        userBuilder.setUserID(userId)
+                ).build();
+         netWork.writeToSrv(send_msg);
+
     }
 
+    @Override
+    public void onProcess(DataFrame.Msg msg) {
+
+    }
 }

@@ -1,17 +1,15 @@
 package com.example.luos.cst_project.Presenter;
 
 import android.content.ContentValues;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
+
 import android.util.Log;
 
 import com.example.luos.cst_project.Model.Config;
 import com.example.luos.cst_project.Model.DataFrame;
-import com.example.luos.cst_project.Model.User;
+import com.example.luos.cst_project.Model.Friend;
+
+import com.example.luos.cst_project.Util.DbUtil;
 import com.example.luos.cst_project.Util.MsgDbContract;
-import com.example.luos.cst_project.View.BaseActivity;
-import com.example.luos.cst_project.View.FriendListActivity;
 import com.example.luos.cst_project.View.IFriendListView;
 
 import java.util.ArrayList;
@@ -21,7 +19,7 @@ import java.util.List;
  * Created by luos on 2016/7/28.
  */
 
-public class IFriendListPresenterCompl extends BaseIPresenter {
+public class IFriendListPresenterCompl extends BaseIPresenter implements IFriendListPresenter{
     private static final String TAG = "IFriendListPresenter";
     private static IFriendListView iFriendListView;
 
@@ -43,5 +41,16 @@ public class IFriendListPresenterCompl extends BaseIPresenter {
         }
     }
 
+    @Override
+    public ArrayList<Friend> getFriendsFromDb() {
+        int userId = getUser().getUserID();
+        DbUtil dbUtil = getDbUtil();
+        return dbUtil.queryFriends(userId+"");
+    }
 
+
+    @Override
+    public void onProcess(DataFrame.Msg msg) {
+
+    }
 }

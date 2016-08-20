@@ -37,66 +37,114 @@ import java.util.List;
  * 基类，所有Activity继承这个基类
  */
 public abstract class BaseActivity extends AppCompatActivity {
-    public static final String TAG = "WoliaoBaseActivity";
-    public static User self = new User();
-    protected static DbUtil dbUtil;
     protected static LinkedList<BaseActivity> queue = new LinkedList<BaseActivity>();
+    public static ArrayList<DataFrame.User> friends;
+    private static final String TAG="WoliaoBaseActivity";
+    final int EXIT_DIALOG=0x12;
+    protected static DbUtil dbUtil;
+    public  static User self = new User();
     private BaseIPresenter iPresenter = new BaseIPresenter();
-    private final int EXIT_DIALOG = 0x12;
-    //所有Acitivity子类共用一个消息队列
-    private static Handler handler = new Handler() {
+    private static Handler handler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
-            if (!queue.isEmpty()) {
-                Log.i(TAG, "start handleMessage,Activity is " + queue.getLast().toString());
+            if(!queue.isEmpty()){
+                Log.i(TAG,"start handleMessage,Activity is "+queue.getLast().toString());
                 queue.getLast().processMessage(msg);
             }
         }
     };
 
-    public abstract void processMessage(Message msg);
+    public abstract  void processMessage(Message msg);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (!queue.contains(this)) {
+        if(!queue.contains(this)){
             queue.add(this);
         }
-        if (dbUtil == null) {
-            dbUtil = new DbUtil(this);
+        if(dbUtil==null){
+            dbUtil=new DbUtil(this);
         }
         requestWindowFeature(Window.FEATURE_NO_TITLE);
     }
 
     @Override
-    public void onBackPressed() {
-        Log.i(TAG, "onBackPressed().... Activity number=" + queue.size());
-        if (queue.size() == 1) {    //当前Activity是最后一个Activity了
-            showDialog(EXIT_DIALOG);
-        } else {
-            queue.getLast().finish();
-        }
-    }
-
-    @Override
     public void finish() {
         super.finish();
-        if (!queue.isEmpty()) {
+        if(!queue.isEmpty()){
             queue.removeLast();
         }
     }
 
+
+    public static User getSelf() {
+        return self;
+    }
+
+    public static void setSelf(User self) {
+        BaseActivity.self = self;
+    }
+
+    public void makeTextShort(String text) {
+        Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
+    }
+
+    public static BaseActivity getCurrentActivity(){
+        return queue.getLast();
+    }
+
+    public static void sendMessage(Message msg){
+        handler.sendMessage(msg);
+    }
+
+    public static void sendEmptyMessage(int what){
+        handler.sendEmptyMessage(what);
+    }
+
+    public static DbUtil getDbUtil(){
+        return dbUtil;
+    }
+
+    @Override
+    public void onBackPressed() {
+        Log.i(TAG, "onBackPressed().... Activity number="+queue.size());
+        if(queue.size()==1){	//当前Activity是最后一个Activity了
+            showDialog(EXIT_DIALOG);
+        }else{
+            queue.getLast().finish();
+        }
+    }
+
+    public void exit() {
+        //关闭Socket连接、输入输出流
+       iPresenter.stopWork();
+        iPresenter.setInstanceNull();
+
+        //关闭数据库、MediaPlayer
+        if(dbUtil!=null){
+            dbUtil=null;
+        }
+
+        //销毁Activity
+        while (queue.size() > 0)
+            queue.getLast().finish();
+    }
+
     @Override
     protected Dialog onCreateDialog(int id) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        Log.i(TAG, "dialog id=" + id);
-        switch (id) {
-            case EXIT_DIALOG: {
+        AlertDialog.Builder builder=new AlertDialog.Builder(this);
+        Log.i(TAG, "dialog id="+id);
+        switch(id){
+            case EXIT_DIALOG:{
                 Log.i(TAG, "要弹出的是退出提醒对话框");
                 builder.setMessage("真的要退出？")
-                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                        .setPositiveButton("确定", new DialogInterface.OnClickListener(){
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                //向服务器发送“退出”请求
+                                iPresenter.exitRequest(self.getUserID());
+
+                                //关闭到服务器的Socket连接，输入流、输出流
                                 exit();
                             }
                         })
@@ -109,66 +157,46 @@ public abstract class BaseActivity extends AppCompatActivity {
             }
             break;
         }
-        AlertDialog dialog = builder.create();
-        Log.i(TAG, "dialog=" + dialog);
+        AlertDialog dialog=builder.create();
+        Log.i(TAG, "dialog="+dialog);
         return dialog;
     }
 
-    public void exit() {
-        //关闭Socket连接、输入输出流
-        iPresenter.stopWork();
-        iPresenter.setInstanceNull();
-        iPresenter.exitRequest(self.getUserID());
+    private void showExitDialog(){
+        AlertDialog.Builder builder=new AlertDialog.Builder(getApplicationContext());
+        builder.setMessage("确定退出？")
+                .setPositiveButton("确定", new DialogInterface.OnClickListener(){
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //向服务器发送“退出”请求
+                        iPresenter.exitRequest(self.getUserID());
 
-        //关闭数据库、MediaPlayer
-        if (dbUtil != null) {
-            dbUtil = null;
-        }
+                        //关闭到服务器的Socket连接，输入流、输出流
+                        exit();
+                    }
+                })
+                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
 
-        //销毁Activity
-        while (queue.size() > 0)
-            queue.getLast().finish();
-    }
-
-    public void makeTextShort(String text) {
-        Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
-    }
-
-    public static BaseActivity getCurrentActivity() {
-        return queue.getLast();
-    }
-
-    public static void sendMessage(Message msg) {
-        handler.sendMessage(msg);
-    }
-
-    public static void sendEmptyMessage(int what) {
-        handler.sendEmptyMessage(what);
-    }
-
-    public static DbUtil getDbUtil() {
-        return dbUtil;
-    }
-
-    public static void setUser(User user){
-        self = user;
+                    }
+                });
+        builder.create().show();
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     public void sendNotifycation(List<DataFrame.PersonalMsg> msgList) {
-        NotificationManager nm = (NotificationManager) getCurrentActivity().getSystemService
-                (Context.NOTIFICATION_SERVICE);
-        Intent intent = new Intent(getCurrentActivity(), ChatActivity.class);
-        if (msgList != null) {
+        NotificationManager nm = (NotificationManager) getCurrentActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+        Intent intent = new Intent(getCurrentActivity(),ChatActivity.class);
+        if(msgList!=null){
             int id = 1;
             int currentSender = 0;
-            for (DataFrame.PersonalMsg msg : msgList) {
-                if (currentSender != msg.getSenderID()) {
+            for (DataFrame.PersonalMsg msg: msgList) {
+                if( currentSender != msg.getSenderID()){
                     currentSender = msg.getSenderID();
-                    Friend friend = dbUtil.queryFriend(msg.getSenderID() + "");
-                    intent.putExtra("friend", friend);
-                    PendingIntent pendingIntent = PendingIntent.getActivity(getCurrentActivity(),
-                            id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                    Friend friend = dbUtil.queryFriend(msg.getSenderID()+"");
+                    intent.putExtra("friend",friend);
+                    PendingIntent pendingIntent = PendingIntent.getActivity(getCurrentActivity(),id,intent, PendingIntent.FLAG_UPDATE_CURRENT);
                     Notification.Builder build = new Notification.Builder(getCurrentActivity())
                             .setContentTitle(friend.getFriendName())
                             .setContentText(msg.getContent())
@@ -177,7 +205,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                             .setWhen(System.currentTimeMillis());
                     Notification notify = build.build();
                     notify.flags = Notification.FLAG_AUTO_CANCEL;
-                    nm.notify(id, notify);
+                    nm.notify(id,notify);
                     id++;
                 }
             }

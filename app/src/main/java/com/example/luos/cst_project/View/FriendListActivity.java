@@ -11,16 +11,16 @@ import com.example.luos.cst_project.Model.Config;
 import com.example.luos.cst_project.Model.DataFrame;
 import com.example.luos.cst_project.Model.User;
 import com.example.luos.cst_project.Presenter.IFriendListPresenterCompl;
+import com.example.luos.cst_project.Presenter.IPresenter;
 import com.example.luos.cst_project.R;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class FriendListActivity extends BaseActivity implements IFriendListView {
+public class FriendListActivity extends BaseActivity {
     private static final String TAG = "FriendListActivity";
     private FriendListFragment fragment;
     private TextView userName;
-    private IFriendListPresenterCompl compl;
 
 
     @Override
@@ -33,10 +33,8 @@ public class FriendListActivity extends BaseActivity implements IFriendListView 
 
     private void init() {
         userName = (TextView) findViewById(R.id.user_name);
-
         userName.setText(self.getNickName());
         setFragment();
-        setPresenter();
     }
 
     private void setFragment() {
@@ -45,10 +43,7 @@ public class FriendListActivity extends BaseActivity implements IFriendListView 
         fm.beginTransaction()
                 .add(R.id.activity_friend_list, fragment)
                 .commit();
-    }
 
-    private void setPresenter() {
-        compl = new IFriendListPresenterCompl(this);
     }
 
 
@@ -62,8 +57,8 @@ public class FriendListActivity extends BaseActivity implements IFriendListView 
                 Log.i(TAG, "bundle getData is :" + bundle);
                 ArrayList data = bundle.getParcelableArrayList("msgList");
                 List<DataFrame.PersonalMsg> msgList = (List<DataFrame.PersonalMsg>) data.get(0);
-                compl.saveMessageToDb(msgList);
                 fragment.initData();
+                fragment.getPresenter().saveMessageToDb(msgList);
                 fragment.getAdapter().notifyDataSetChanged();
                 sendNotifycation(msgList);
                 break;

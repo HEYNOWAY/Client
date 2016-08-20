@@ -16,6 +16,9 @@ import com.example.luos.cst_project.Model.DataFrame;
 import com.example.luos.cst_project.Model.Friend;
 import com.example.luos.cst_project.Model.User;
 import com.example.luos.cst_project.Presenter.BaseIPresenter;
+import com.example.luos.cst_project.Presenter.IFriendListPresenter;
+import com.example.luos.cst_project.Presenter.IFriendListPresenterCompl;
+import com.example.luos.cst_project.Presenter.IPresenter;
 import com.example.luos.cst_project.R;
 import com.example.luos.cst_project.Util.DbUtil;
 
@@ -25,14 +28,14 @@ import java.util.ArrayList;
  * Created by luos on 2016/7/27.
  */
 
-public class FriendListFragment extends ListFragment {
+public class FriendListFragment extends ListFragment implements IFriendListView {
     public static final String EXTRA_FRIEND = "friend";
     private static final String TAG = "FriendListFragment";
     private ArrayList<Friend> list;
     private FriendAdapter adapter;
+    private IFriendListPresenter friendListPresenter;
 
     public FriendListFragment() {
-
     }
 
     @Override
@@ -40,6 +43,7 @@ public class FriendListFragment extends ListFragment {
         super.onCreate(savedInstanceState);
         getActivity().setTitle("我的朋友");
         Log.i(TAG, "onCreate...");
+        friendListPresenter = new IFriendListPresenterCompl(this);
     }
 
 
@@ -52,16 +56,12 @@ public class FriendListFragment extends ListFragment {
 
     public void initData() {
         Log.i(TAG, "initData()...");
-        User self = BaseIPresenter.getUser();
-        DbUtil dbUtil = BaseIPresenter.getDbUtil();
         if (list == null) {
-            Log.i(TAG, "initData self=" + self + " dbUtil=" + dbUtil);
-            list = dbUtil.queryFriends(self.getUserID() + "");
+            list = friendListPresenter.getFriendsFromDb();
             adapter = new FriendAdapter(getActivity(), list);
             setListAdapter(adapter);
         } else {
-            list = dbUtil.queryFriends(self.getUserID() + "");
-            Log.i(TAG, "回到FriendListActivity,通知数据更新; list.size=" + list.size());
+            list = friendListPresenter.getFriendsFromDb();
             adapter = new FriendAdapter(getActivity(), list);
             setListAdapter(adapter);
             adapter.notifyDataSetChanged();
@@ -79,6 +79,10 @@ public class FriendListFragment extends ListFragment {
 
     public FriendAdapter getAdapter() {
         return adapter;
+    }
+
+    public IFriendListPresenter getPresenter(){
+        return friendListPresenter;
     }
 
 
