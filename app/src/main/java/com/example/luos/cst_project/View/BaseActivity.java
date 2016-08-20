@@ -39,7 +39,7 @@ import java.util.List;
 public abstract class BaseActivity extends AppCompatActivity {
     protected static LinkedList<BaseActivity> queue = new LinkedList<BaseActivity>();
     public static ArrayList<DataFrame.User> friends;
-    private static final String TAG="WoliaoBaseActivity";
+    private static final String TAG="BaseActivity";
     final int EXIT_DIALOG=0x12;
     protected static DbUtil dbUtil;
     public  static User self = new User();
@@ -61,6 +61,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         if(!queue.contains(this)){
             queue.add(this);
+            Log.i(TAG,"acitvity add:"+this);
         }
         if(dbUtil==null){
             dbUtil=new DbUtil(this);
@@ -72,7 +73,8 @@ public abstract class BaseActivity extends AppCompatActivity {
     public void finish() {
         super.finish();
         if(!queue.isEmpty()){
-            queue.removeLast();
+            BaseActivity activity = queue.removeLast();
+            Log.d(TAG,"acitvity remove:"+activity);
         }
     }
 
@@ -126,8 +128,11 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
 
         //销毁Activity
-        while (queue.size() > 0)
+        while (queue.size() > 0){
+            Log.d(TAG,"acitvity remove:"+this);
             queue.getLast().finish();
+        }
+
     }
 
     @Override
