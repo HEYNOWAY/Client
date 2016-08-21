@@ -1,45 +1,23 @@
 package com.example.luos.cst_project.Presenter;
 
-import android.content.Context;
-import android.os.Message;
-import android.util.Log;
 
-import com.example.luos.cst_project.Model.User;
-import com.example.luos.cst_project.Util.DbUtil;
+import com.example.luos.cst_project.Model.Config;
+import com.example.luos.cst_project.Model.DataFrame;
 import com.example.luos.cst_project.Util.NetWork;
-import com.example.luos.cst_project.View.BaseActivity;
+
 
 /**
  * Created by luos on 2016/8/13.
  */
 
-public class BaseIPresenter {
+public class BaseIPresenter implements IPresenter {
     private static final String TAG = "BaseIPresenter";
+    private DataFrame.Msg.Builder msgBuilder = DataFrame.Msg.newBuilder();
+    private DataFrame.User.Builder userBuilder = DataFrame.User.newBuilder();
+    private NetWork netWork;
 
-    public BaseIPresenter (){
-    }
-    public static void sendEmptyMessage(int what) {
-        BaseActivity.sendEmptyMessage(what);
-        Log.i(TAG, "Activity is"+BaseActivity.getCurrentActivity());
-        Log.i(TAG, "send Empty message is: "+what);
-    }
 
-    public static void sendMessage(Message msg){
-        BaseActivity.sendMessage(msg);
-        Log.i(TAG, "Activity is"+BaseActivity.getCurrentActivity());
-        Log.i(TAG, "send Empty message is: "+msg);
-    }
-
-    public static DbUtil getDbUtil(){
-        return BaseActivity.getDbUtil();
-    }
-
-    public static User getUser(){
-        return BaseActivity.getSelf();
-    }
-
-    public static void setUser(User user){
-        BaseActivity.setSelf(user);
+    public BaseIPresenter() {
     }
 
     public void stopWork(){
@@ -50,8 +28,20 @@ public class BaseIPresenter {
         NetWork.getInstance().setInstanceNull();
     }
 
-    public void exitRequest(int userId){
-        NetWork.getInstance().sendExitRequest(userId);
+    public void exitRequest(int userId) {
+        netWork = NetWork.getInstance();
+        DataFrame.Msg send_msg = msgBuilder
+                .setUserOpt(Config.REQUEST_EXIT)
+                .setUser(
+                        userBuilder.setUserID(userId)
+                ).build();
+         netWork.writeToSrv(send_msg);
+         netWork.addIPresenter(this);
+
     }
 
+    @Override
+    public void onProcess(DataFrame.Msg msg) {
+
+    }
 }

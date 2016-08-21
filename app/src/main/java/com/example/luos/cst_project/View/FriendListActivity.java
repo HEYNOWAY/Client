@@ -20,9 +20,6 @@ public class FriendListActivity extends BaseActivity implements IFriendListView 
     private static final String TAG = "FriendListActivity";
     private FriendListFragment fragment;
     private TextView userName;
-    private IFriendListPresenterCompl compl;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +34,6 @@ public class FriendListActivity extends BaseActivity implements IFriendListView 
         fm.beginTransaction()
                 .add(R.id.activity_friend_list,fragment)
                 .commit();
-        compl = new IFriendListPresenterCompl(this);
     }
 
     @Override
@@ -49,8 +45,11 @@ public class FriendListActivity extends BaseActivity implements IFriendListView 
                 Bundle bundle = msg.getData();
                 Log.i(TAG,"bundle getData is :"+bundle);
                 ArrayList data = bundle.getParcelableArrayList("msgList");
-                List<DataFrame.PersonalMsg> msgList = (List<DataFrame.PersonalMsg>) data.get(0);
-                compl.saveMessageToDb(msgList);
+                List<DataFrame.PersonalMsg> msgList = new ArrayList<>();
+                if(data!=null){
+                   msgList = (List<DataFrame.PersonalMsg>) data.get(0);
+                }
+                fragment.getPresenter().saveMessageToDb(msgList);
                 fragment.initData();
                 fragment.getAdapter().notifyDataSetChanged();
                 sendNotifycation(msgList);
@@ -59,15 +58,5 @@ public class FriendListActivity extends BaseActivity implements IFriendListView 
                 break;
 
         }
-    }
-
-    @Override
-    public ArrayList<DataFrame.User> getFriendList() {
-        return friends;
-    }
-
-    @Override
-    public void setFriendList(ArrayList<DataFrame.User> friends) {
-        this.friends = friends;
     }
 }

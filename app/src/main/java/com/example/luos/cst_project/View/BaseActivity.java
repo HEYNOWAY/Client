@@ -37,12 +37,12 @@ import java.util.List;
  * 基类，所有Activity继承这个基类
  */
 public abstract class BaseActivity extends AppCompatActivity {
-    protected static LinkedList<BaseActivity> queue = new LinkedList<BaseActivity>();
-    public static ArrayList<DataFrame.User> friends;
+
     private static final String TAG="BaseActivity";
-    final int EXIT_DIALOG=0x12;
+    private final int EXIT_DIALOG=0x12;
     protected static DbUtil dbUtil;
     public  static User self = new User();
+    private static LinkedList<BaseActivity> queue = new LinkedList<>();
     private BaseIPresenter iPresenter = new BaseIPresenter();
     private static Handler handler = new Handler(){
         @Override
@@ -92,7 +92,10 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     public static BaseActivity getCurrentActivity(){
-        return queue.getLast();
+        if(!queue.isEmpty())
+            return queue.getLast();
+        else
+            return null;
     }
 
     public static void sendMessage(Message msg){

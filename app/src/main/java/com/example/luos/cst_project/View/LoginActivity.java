@@ -49,19 +49,6 @@ public class LoginActivity extends BaseActivity implements ILoginView, View.OnCl
         Init();
     }
 
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-
-    }
-
-    @Override
-    protected void onDestroy() {
-        Log.i(TAG, "onDestroy()...");
-        super.onDestroy();
-    }
-
     private void Init() {
         //初始化控件
         usernameEdt = (EditText) findViewById(R.id.username);
@@ -130,7 +117,7 @@ public class LoginActivity extends BaseActivity implements ILoginView, View.OnCl
         }
     }
 
-    public boolean isAccountAndPswValue() {
+    private boolean isAccountAndPswValue() {
         if (usernameEdt.getText().toString().trim().equals("")) {
             usernameEdt.setError("用户名不能为空");
             return false;
@@ -152,7 +139,6 @@ public class LoginActivity extends BaseActivity implements ILoginView, View.OnCl
                 Intent intent = new Intent(this, FriendListActivity.class);
                 startActivity(intent);
                 finish();
-                Log.i(TAG,"finish()");
                 break;
             case Config.LOGIN_FAILED:
                 Log.i(TAG, "login failed...");
@@ -165,14 +151,17 @@ public class LoginActivity extends BaseActivity implements ILoginView, View.OnCl
                 Log.i(TAG, "send notificaiton...");
                 Bundle bundle = msg.getData();
                 ArrayList data = bundle.getParcelableArrayList("msgList");
-                List<DataFrame.PersonalMsg> msgList = (List<DataFrame.PersonalMsg>) data.get(0);
+                List<DataFrame.PersonalMsg> msgList = new ArrayList<>();
+                if(data!=null){
+                   msgList = (List<DataFrame.PersonalMsg>) data.get(0);
+                }
                 loginPresenter.saveMessageToDb(msgList);
                 sendNotifycation(msgList);
                 break;
         }
     }
 
-    public void clearText() {
+    private void clearText() {
         usernameEdt.setText("");
         passwordEdt.setText("");
     }
@@ -187,5 +176,10 @@ public class LoginActivity extends BaseActivity implements ILoginView, View.OnCl
         progressbar.setVisibility(visibility);
     }
 
+    @Override
+    protected void onDestroy() {
+        Log.i(TAG, "onDestroy()...");
+        super.onDestroy();
+    }
 
 }

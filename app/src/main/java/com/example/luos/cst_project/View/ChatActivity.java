@@ -29,7 +29,7 @@ import java.util.List;
 
 public class ChatActivity extends BaseActivity implements View.OnClickListener ,IChatView{
     protected static final String TAG = "Test_ChatActivity";
-    private List<ChatMessage> msgList = new ArrayList<ChatMessage>();
+    private List<ChatMessage> msgList = new ArrayList<>();
     private ListView mlistView;
     private EditText mEditText;
     private Button mSend;
@@ -74,13 +74,13 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener ,
     private void setAdapterForThis(){
         initMessages();
         if(msgList==null){
-            msgList = new ArrayList<ChatMessage>();
+            msgList = new ArrayList<>();
         }
         adapter = new ChattingAdapter(this,msgList);
         mlistView.setAdapter(adapter);
     }
 
-    public void initMessages(){
+    private void initMessages(){
         Log.i(TAG,"initMessages()...selfId is:"+self.getUserID()+", friendId is:"+friendID);
         msgList = dbUtil.queryMessages(self.getUserID()+"", friendID+"");
         Log.i(TAG, "messages="+msgList);
@@ -101,7 +101,7 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener ,
             case R.id.send_button:
                 String str = mEditText.getText().toString().trim();
                 String sendStr = str.replaceAll("\r", "").replaceAll("\t", "").replaceAll("\n", "").replaceAll("\f", "");
-                if(str!=null&&!str.equals("")&&sendStr!=null){
+                if(!str.equals("") && sendStr!=null){
                     sendChatMsg(Config.MESSAGE_TYPE_TXT,sendStr);
                     mEditText.setText("");
                 } else {
@@ -116,8 +116,8 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener ,
         Log.i(TAG,"sendChatMsg()...");
         String time = TimeUtil.getAbsoluteTime();
         int userId = self.getUserID();
-        boolean result = iChatPresenter.sendChatMessage(userId,friendID,content,time);
-        if(result==true){
+        boolean result = iChatPresenter.sendChatMessage(friendID,content,time);
+        if(result){
             ChatMessage message = new ChatMessage(userId,friendID,time,content,type,Config.MESSAGE_TO);
             msgList.add(message);
             Log.i(TAG,"send message is:"+message);

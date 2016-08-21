@@ -3,24 +3,37 @@ package com.example.luos.cst_project.Presenter;
 import android.content.ContentValues;
 
 import com.example.luos.cst_project.Model.ChatMessage;
+import com.example.luos.cst_project.Model.Config;
+import com.example.luos.cst_project.Model.DataFrame;
 import com.example.luos.cst_project.Util.MsgDbContract.MsgEntry;
 import com.example.luos.cst_project.Util.NetWork;
+import com.example.luos.cst_project.View.BaseActivity;
 import com.example.luos.cst_project.View.IChatView;
 
 /**
  * Created by luos on 2016/8/9.
  */
 
-public class IChatPresenterCompl extends BaseIPresenter implements IChatPresenter{
-    private IChatView iChatView;
 
-    public IChatPresenterCompl(IChatView iChatView){
+public class IChatPresenterCompl  implements IChatPresenter {
+    private DataFrame.PersonalMsg.Builder personalBuilder = DataFrame.PersonalMsg.newBuilder();
+    private IChatView iChatView;
+    private DataFrame.Msg.Builder msgBuilder = DataFrame.Msg.newBuilder();
+    private NetWork netWork = NetWork.getInstance();
+
+    public IChatPresenterCompl(IChatView iChatView) {
         this.iChatView = iChatView;
     }
 
     @Override
-    public boolean sendChatMessage(int sendId, int receiveId, String content, String time) {
-        return NetWork.getInstance().sendText(sendId, receiveId,content,time);
+    public boolean sendChatMessage( int receiveId, String content, String time) {
+        DataFrame.Msg send_msg = msgBuilder.setUserOpt(Config.REQUEST_SEND_TXT)
+                .addPersonalMsg(
+                        personalBuilder.setSenderID(BaseActivity.getSelf().getUserID())
+                                .setRecverID(receiveId)
+                                .setContent(content)
+                                .setSendTime(time)).build();
+        return netWork.writeToSrv(send_msg);
     }
 
     public void saveMessageToDb(ChatMessage message) {
@@ -31,7 +44,11 @@ public class IChatPresenterCompl extends BaseIPresenter implements IChatPresente
         values.put(MsgEntry.TYPE, message.getType());
         values.put(MsgEntry.CONTENT, message.getContent());
         values.put(MsgEntry.TIME, message.getTime());
-        getDbUtil().insertMessage(values);
+        BaseActivity.getDbUtil().insertMessage(values);
     }
 
+    @Override
+    public void onProcess(DataFrame.Msg msg) {
+
+    }
 }
