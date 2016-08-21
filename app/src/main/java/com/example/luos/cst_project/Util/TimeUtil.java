@@ -40,7 +40,8 @@ public class TimeUtil {
             int hour1=cl.get(Calendar.HOUR_OF_DAY);
             int minute1=cl.get(Calendar.MINUTE);
             int second1=cl.get(Calendar.SECOND);
-//年份不同
+
+            //年份不同
             if (year1 != year2) {
                 return time = year1 + "年" + month1 + "月" + day1;
             }
