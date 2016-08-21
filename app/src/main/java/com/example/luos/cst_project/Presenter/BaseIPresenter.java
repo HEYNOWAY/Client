@@ -22,31 +22,7 @@ public class BaseIPresenter implements IPresenter {
     protected DataFrame.User.Builder userBuilder = DataFrame.User.newBuilder();
 
     public BaseIPresenter() {
-        netWork.addIPresenter(this);
-    }
 
-    public static void sendEmptyMessage(int what) {
-        BaseActivity.sendEmptyMessage(what);
-        Log.i(TAG, "Activity is" + BaseActivity.getCurrentActivity());
-        Log.i(TAG, "send Empty message is: " + what);
-    }
-
-    public static void sendMessage(Message msg) {
-        BaseActivity.sendMessage(msg);
-        Log.i(TAG, "Activity is" + BaseActivity.getCurrentActivity());
-        Log.i(TAG, "send Empty message is: " + msg);
-    }
-
-    public static DbUtil getDbUtil() {
-        return BaseActivity.getDbUtil();
-    }
-
-    public static User getUser() {
-        return BaseActivity.self;
-    }
-
-    public static void setUser(User user){
-        BaseActivity.self = user;
     }
 
     public void stopWork() {
@@ -64,7 +40,7 @@ public class BaseIPresenter implements IPresenter {
                         userBuilder.setUserID(userId)
                 ).build();
          netWork.writeToSrv(send_msg);
-
+         netWork.addIPresenter(this);
     }
 
     @Override

@@ -125,6 +125,7 @@ public class NetWork extends Thread {
    }
 
    public void addIPresenter(IPresenter presenter){
+      Log.i(TAG,presenter+"插入");
       mPresenterList.add(presenter);
    }
 

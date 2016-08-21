@@ -25,9 +25,12 @@ import java.util.List;
  * Created by luos on 2016/6/25.
  */
 
-public class ILoginPresenterCompl extends BaseIPresenter implements ILoginPresenter {
+public class ILoginPresenterCompl implements ILoginPresenter {
     private static final String TAG = "ILoginPresenterCompl";
     private static ILoginView iLoginView;
+    private NetWork netWork = NetWork.getInstance();
+    private DataFrame.Msg.Builder msgBuilder = DataFrame.Msg.newBuilder();
+    private DataFrame.User.Builder userBuilder = DataFrame.User.newBuilder();
 
 
     public ILoginPresenterCompl(ILoginView iLoginView) {
@@ -79,7 +82,7 @@ public class ILoginPresenterCompl extends BaseIPresenter implements ILoginPresen
             values.put(MsgEntry.CONTENT, msg.getContent());
             values.put(MsgEntry.TIME, msg.getSendTime());
             values.put(MsgEntry.DIRECTION, Config.MESSAGE_FROM);
-            getDbUtil().insertMessage(values);
+            BaseActivity.getDbUtil().insertMessage(values);
         }
     }
 
@@ -96,12 +99,12 @@ public class ILoginPresenterCompl extends BaseIPresenter implements ILoginPresen
                     user.setUserID(userId);
                     String userName = recive_msg.getUser().getUesrName();
                     user.setUserName(userName);
-                    setUser(user);
-                    sendEmptyMessage(Config.LOGIN_SUCCESS);
+                    BaseActivity.setSelf(user);
+                    BaseActivity.sendEmptyMessage(Config.LOGIN_SUCCESS);
                     Log.i(TAG,"handlogin()...finished");
 
                 } else {
-                    sendEmptyMessage(Config.LOGIN_FAILED);
+                    BaseActivity.sendEmptyMessage(Config.LOGIN_FAILED);
                     Log.i(TAG,"handlogin()...failed,reason:"+recive_msg.getReceiveResult());
                 }
                 break;
@@ -113,14 +116,11 @@ public class ILoginPresenterCompl extends BaseIPresenter implements ILoginPresen
                     List<DataFrame.PersonalMsg> msgList = recive_msg.getPersonalMsgList();
                     ArrayList list = new ArrayList();
                     list.add(msgList);
-
                     Bundle bundle = new Bundle();
                     bundle.putParcelableArrayList("msgList",list);
                     message.what = Config.SEND_NOTIFICATION;
                     message.setData(bundle);
-
-                    sendMessage(message);
-                    Log.i(TAG,"current activity :"+BaseActivity.getCurrentActivity());
+                    BaseActivity.sendMessage(message);
                     Log.i(TAG,"getOffmsg is:"+msgList);
                 }
                 break;

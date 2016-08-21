@@ -57,8 +57,8 @@ public class FriendListActivity extends BaseActivity {
                 Log.i(TAG, "bundle getData is :" + bundle);
                 ArrayList data = bundle.getParcelableArrayList("msgList");
                 List<DataFrame.PersonalMsg> msgList = (List<DataFrame.PersonalMsg>) data.get(0);
-                fragment.initData();
                 fragment.getPresenter().saveMessageToDb(msgList);
+                fragment.initData();
                 fragment.getAdapter().notifyDataSetChanged();
                 sendNotifycation(msgList);
                 break;

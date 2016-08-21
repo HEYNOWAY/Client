@@ -90,7 +90,10 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     public static BaseActivity getCurrentActivity(){
-        return queue.getLast();
+        if(!queue.isEmpty())
+            return queue.getLast();
+        else
+            return null;
     }
 
     public static void sendMessage(Message msg){
