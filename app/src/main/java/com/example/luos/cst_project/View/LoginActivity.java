@@ -53,7 +53,7 @@ public class LoginActivity extends BaseActivity implements ILoginView, View.OnCl
     @Override
     protected void onStop() {
         super.onStop();
-        finish();
+
     }
 
     @Override
@@ -151,6 +151,7 @@ public class LoginActivity extends BaseActivity implements ILoginView, View.OnCl
                 loginPresenter.getOffMsg(LoginActivity.self.getUserID());
                 Intent intent = new Intent(this, FriendListActivity.class);
                 startActivity(intent);
+                finish();
                 break;
 
             case Config.LOGIN_FAILED:
