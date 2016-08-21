@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -29,7 +31,7 @@ import java.util.List;
 
 public class ChatActivity extends BaseActivity implements View.OnClickListener ,IChatView{
     protected static final String TAG = "Test_ChatActivity";
-    private List<ChatMessage> msgList = new ArrayList<>();
+    private List<ChatMessage> msgList;
     private ListView mlistView;
     private EditText mEditText;
     private Button mSend;
@@ -51,28 +53,37 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener ,
 
     private void Init() {
         Log.i(TAG,"onInit()...");
+        //初始化控件件
         mEditText = (EditText) findViewById(R.id.text_editor);
         mSend = (Button) findViewById(R.id.send_button);
         mlistView = (ListView) findViewById(R.id.chatting_history_lv);
         mNickName = (TextView) findViewById(R.id.nickName);
 
+        //获取Intent数据
         Intent intent = getIntent();
         Friend friend = intent.getParcelableExtra(FriendListFragment.EXTRA_FRIEND);
-        Log.i(TAG,"get friend is "+friend);
         friendNickName = friend.getFriendName();
         friendID = friend.getFriendID();
+
+        //初始化设置
+        setNickName();
+        setPresneter();
         setAdapterForThis();
 
-        iChatPresenter = new IChatPresenterCompl(this);
-        mNickName.setText(friendNickName);
         mSend.setOnClickListener(this);
-
         registerForContextMenu(mlistView);
+    }
 
+    private void setNickName(){
+        mNickName.setText(friendNickName);
+    }
+
+    private void setPresneter(){
+        iChatPresenter = new IChatPresenterCompl(this);
     }
 
     private void setAdapterForThis(){
-        initMessages();
+        msgList = dbUtil.queryMessages(self.getUserID()+"", friendID+"");
         if(msgList==null){
             msgList = new ArrayList<>();
         }
@@ -80,15 +91,29 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener ,
         mlistView.setAdapter(adapter);
     }
 
-    private void initMessages(){
-        Log.i(TAG,"initMessages()...selfId is:"+self.getUserID()+", friendId is:"+friendID);
-        msgList = dbUtil.queryMessages(self.getUserID()+"", friendID+"");
-        Log.i(TAG, "messages="+msgList);
-        if(msgList!=null){
-            Log.i(TAG, "initMessages() messages.size="+msgList.size());
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.send_button:
+                String text = mEditText.getText().toString();
+                iChatPresenter.doSendMessage(text,friendID);
+                break;
         }
     }
 
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        menu.setHeaderTitle("删除聊天记录");
+        menu.add(0, 0, 0, "删除全部聊天记录？");
+        super.onCreateContextMenu(menu, v, menuInfo);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        dbUtil.deleteAllMessages(self.getUserID()+"", friendID+"");
+        setAdapterForThis();
+        return super.onContextItemSelected(item);
+    }
 
     @Override
     public void processMessage(Message msg) {
@@ -96,37 +121,22 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener ,
     }
 
     @Override
-    public void onClick(View v) {
-        switch (v.getId()){
-            case R.id.send_button:
-                String str = mEditText.getText().toString().trim();
-                String sendStr = str.replaceAll("\r", "").replaceAll("\t", "").replaceAll("\n", "").replaceAll("\f", "");
-                if(!str.equals("") && sendStr!=null){
-                    sendChatMsg(Config.MESSAGE_TYPE_TXT,sendStr);
-                    mEditText.setText("");
-                } else {
-                    makeTextShort("发送消息不能为空");
-                }
-
-        }
+    public void clearText() {
+        mEditText.setText("");
     }
 
     @Override
-    public boolean sendChatMsg(int type, String content) {
-        Log.i(TAG,"sendChatMsg()...");
-        String time = TimeUtil.getAbsoluteTime();
-        int userId = self.getUserID();
-        boolean result = iChatPresenter.sendChatMessage(friendID,content,time);
-        if(result){
-            ChatMessage message = new ChatMessage(userId,friendID,time,content,type,Config.MESSAGE_TO);
-            msgList.add(message);
-            Log.i(TAG,"send message is:"+message);
-            iChatPresenter.saveMessageToDb(message);
-            adapter.notifyDataSetChanged();
-            return true;
-        } else {
-            makeTextShort("消息发送失败");
-            return false;
-        }
+    public void makeToast(String text) {
+        makeTextShort(text);
+    }
+
+    @Override
+    public void msgListAddMsg(ChatMessage message) {
+        msgList.add(message);
+    }
+
+    @Override
+    public void notifyAdapterDataChange() {
+        adapter.notifyDataSetChanged();
     }
 }

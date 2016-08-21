@@ -37,13 +37,13 @@ import java.util.List;
  * 基类，所有Activity继承这个基类
  */
 public abstract class BaseActivity extends AppCompatActivity {
-
+    public  static User self = new User();
+    protected static DbUtil dbUtil;
+    private BaseIPresenter iPresenter = new BaseIPresenter();
     private static final String TAG="BaseActivity";
     private final int EXIT_DIALOG=0x12;
-    protected static DbUtil dbUtil;
-    public  static User self = new User();
     private static LinkedList<BaseActivity> queue = new LinkedList<>();
-    private BaseIPresenter iPresenter = new BaseIPresenter();
+
     private static Handler handler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
@@ -57,7 +57,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     public abstract  void processMessage(Message msg);
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if(!queue.contains(this)){
             queue.add(this);
@@ -67,75 +67,6 @@ public abstract class BaseActivity extends AppCompatActivity {
             dbUtil=new DbUtil(this);
         }
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-    }
-
-    @Override
-    public void finish() {
-        super.finish();
-        if(!queue.isEmpty()){
-            BaseActivity activity = queue.removeLast();
-            Log.d(TAG,"acitvity remove:"+activity);
-        }
-    }
-
-
-    public static User getSelf() {
-        return self;
-    }
-
-    public static void setSelf(User self) {
-        BaseActivity.self = self;
-    }
-
-    public void makeTextShort(String text) {
-        Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
-    }
-
-    public static BaseActivity getCurrentActivity(){
-        if(!queue.isEmpty())
-            return queue.getLast();
-        else
-            return null;
-    }
-
-    public static void sendMessage(Message msg){
-        handler.sendMessage(msg);
-    }
-
-    public static void sendEmptyMessage(int what){
-        handler.sendEmptyMessage(what);
-    }
-
-    public static DbUtil getDbUtil(){
-        return dbUtil;
-    }
-
-    @Override
-    public void onBackPressed() {
-        Log.i(TAG, "onBackPressed().... Activity number="+queue.size());
-        if(queue.size()==1){	//当前Activity是最后一个Activity了
-            showDialog(EXIT_DIALOG);
-        }else{
-            queue.getLast().finish();
-        }
-    }
-
-    public void exit() {
-        //关闭Socket连接、输入输出流
-       iPresenter.stopWork();
-        iPresenter.setInstanceNull();
-
-        //关闭数据库、MediaPlayer
-        if(dbUtil!=null){
-            dbUtil=null;
-        }
-
-        //销毁Activity
-        while (queue.size() > 0){
-            Log.d(TAG,"acitvity remove:"+this);
-            queue.getLast().finish();
-        }
-
     }
 
     @Override
@@ -149,10 +80,6 @@ public abstract class BaseActivity extends AppCompatActivity {
                         .setPositiveButton("确定", new DialogInterface.OnClickListener(){
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                //向服务器发送“退出”请求
-                                iPresenter.exitRequest(self.getUserID());
-
-                                //关闭到服务器的Socket连接，输入流、输出流
                                 exit();
                             }
                         })
@@ -170,26 +97,73 @@ public abstract class BaseActivity extends AppCompatActivity {
         return dialog;
     }
 
-    private void showExitDialog(){
-        AlertDialog.Builder builder=new AlertDialog.Builder(getApplicationContext());
-        builder.setMessage("确定退出？")
-                .setPositiveButton("确定", new DialogInterface.OnClickListener(){
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        //向服务器发送“退出”请求
-                        iPresenter.exitRequest(self.getUserID());
+    @Override
+    public void onBackPressed() {
+        Log.i(TAG, "onBackPressed().... Activity number="+queue.size());
+        if(queue.size()==1){	//当前Activity是最后一个Activity了
+            showDialog(EXIT_DIALOG);
+        }else{
+            queue.getLast().finish();
+        }
+    }
 
-                        //关闭到服务器的Socket连接，输入流、输出流
-                        exit();
-                    }
-                })
-                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
+    @Override
+    public void finish() {
+        super.finish();
+        if(!queue.isEmpty()){
+            BaseActivity activity = queue.removeLast();
+            Log.d(TAG,"acitvity remove:"+activity);
+        }
+    }
 
-                    }
-                });
-        builder.create().show();
+    public void exit() {
+        //关闭Socket连接、输入输出流
+        iPresenter.exitRequest(self.getUserID());
+        iPresenter.stopWork();
+        iPresenter.setInstanceNull();
+
+        //关闭数据库、MediaPlayer
+        if(dbUtil!=null){
+            dbUtil=null;
+        }
+
+        //销毁Activity
+        while (queue.size() > 0){
+            queue.getLast().finish();
+        }
+
+    }
+
+
+    public static User getSelf() {
+        return self;
+    }
+
+    public static void setSelf(User self) {
+        BaseActivity.self = self;
+    }
+
+    public static DbUtil getDbUtil(){
+        return dbUtil;
+    }
+
+    public void makeTextShort(String text) {
+        Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
+    }
+
+    public static void sendMessage(Message msg){
+        handler.sendMessage(msg);
+    }
+
+    public static void sendEmptyMessage(int what){
+        handler.sendEmptyMessage(what);
+    }
+
+    public static BaseActivity getCurrentActivity(){
+        if(!queue.isEmpty())
+            return queue.getLast();
+        else
+            return null;
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)

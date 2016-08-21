@@ -41,7 +41,7 @@ public class LoginActivity extends BaseActivity implements ILoginView, View.OnCl
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         Log.i(TAG, "onCreate()....");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
@@ -110,9 +110,9 @@ public class LoginActivity extends BaseActivity implements ILoginView, View.OnCl
                         editor.clear();
                     }
                     editor.commit();
+
                     loginPresenter.doLogin(username, password);
                 }
-
                 break;
         }
     }
@@ -140,6 +140,7 @@ public class LoginActivity extends BaseActivity implements ILoginView, View.OnCl
                 startActivity(intent);
                 finish();
                 break;
+
             case Config.LOGIN_FAILED:
                 Log.i(TAG, "login failed...");
                 clearText();
@@ -176,10 +177,6 @@ public class LoginActivity extends BaseActivity implements ILoginView, View.OnCl
         progressbar.setVisibility(visibility);
     }
 
-    @Override
-    protected void onDestroy() {
-        Log.i(TAG, "onDestroy()...");
-        super.onDestroy();
-    }
+
 
 }

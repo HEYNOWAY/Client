@@ -82,7 +82,7 @@ public class NetWork extends Thread {
                try {
                   DataFrame.Msg msg = dataQueue.take();
                   for (IPresenter presenter : mPresenterList)
-                     presenter.onProcess(msg);
+                       presenter.onProcess(msg);
             }catch(InterruptedException e){
                e.printStackTrace();
             }

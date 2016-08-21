@@ -35,9 +35,6 @@ public class FriendListFragment extends ListFragment implements IFriendListView 
     private FriendAdapter adapter;
     private IFriendListPresenter friendListPresenter;
 
-    public FriendListFragment() {
-    }
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,7 +42,6 @@ public class FriendListFragment extends ListFragment implements IFriendListView 
         Log.i(TAG, "onCreate...");
         friendListPresenter = new IFriendListPresenterCompl(this);
     }
-
 
     @Override
     public void onResume() {

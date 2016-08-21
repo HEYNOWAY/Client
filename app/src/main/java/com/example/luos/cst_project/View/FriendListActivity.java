@@ -22,7 +22,7 @@ public class FriendListActivity extends BaseActivity implements IFriendListView 
     private TextView userName;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.i(TAG,"onCreate...");
 

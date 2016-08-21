@@ -1,6 +1,7 @@
 package com.example.luos.cst_project.Util;
 
 import com.example.luos.cst_project.Model.ChatMessage;
+import com.example.luos.cst_project.Model.DataFrame;
 import com.example.luos.cst_project.Model.Friend;
 import com.example.luos.cst_project.Util.MsgDbContract.MsgEntry;
 import com.example.luos.cst_project.Util.FriendDbContract.FriendsEntry;
@@ -12,7 +13,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by luos on 2016/8/13.
@@ -66,41 +69,6 @@ public class DbUtil extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public ArrayList<ChatMessage> queryMessages(String selfId, String friendId){
-        Log.i(TAG,"queryMessage()...");
-        ArrayList<ChatMessage> list=new ArrayList<ChatMessage>();
-        SQLiteDatabase db=getReadableDatabase();
-        String selection=MsgEntry.SEND_ID +"=? and "+ MsgEntry.RECEVICE_ID +"=?";
-        String[] selectionArgs=new String[]{selfId,friendId};
-
-        Cursor cursor=db.query(MsgEntry.TABLE_NAME,null,selection,selectionArgs,null,null,MsgEntry.TIME);
-        Log.i(TAG, "queryMessages() cursor.count="+cursor.getCount());
-        //如果游标为空（查找失败）或查到的信息数位0，返回null
-        if(cursor==null || cursor.getCount()==0){
-            Log.i(TAG, "DatabaseUtil queryMessage() 异常：游标为空");
-            return list;
-        }
-
-
-        cursor.moveToFirst();
-        while(!cursor.isAfterLast()){
-            ChatMessage message=new ChatMessage();
-            message.setSendId(cursor.getInt(cursor.getColumnIndex(MsgEntry.SEND_ID)));
-            message.setReceiveId(cursor.getInt(cursor.getColumnIndex(MsgEntry.RECEVICE_ID)));
-            message.setType(cursor.getInt(cursor.getColumnIndex(MsgEntry.TYPE)));
-            message.setContent(cursor.getString(cursor.getColumnIndex(MsgEntry.CONTENT)));
-            message.setTime(cursor.getString(cursor.getColumnIndex(MsgEntry.TIME)));
-            message.setDirection(cursor.getInt(cursor.getColumnIndex(MsgEntry.DIRECTION)));
-            list.add(message);
-            cursor.moveToNext();
-			Log.i(TAG, "queryMessages()：查到一条消息"+message);
-        }
-
-        cursor.close();
-        db.close();
-        return list;
-    }
-
     public void insertMessage(ContentValues values){
         Log.i(TAG,"insertMessage()...");
         SQLiteDatabase db=getWritableDatabase();
@@ -127,6 +95,85 @@ public class DbUtil extends SQLiteOpenHelper {
         Log.i(TAG, "insertMessage update friend number:"+number);
         db.close();
     }
+
+    public ArrayList<ChatMessage> queryMessages(String selfId, String friendId){
+        Log.i(TAG,"queryMessage()...");
+        ArrayList<ChatMessage> list=new ArrayList<ChatMessage>();
+        SQLiteDatabase db=getReadableDatabase();
+        String selection=MsgEntry.SEND_ID +"=? and "+ MsgEntry.RECEVICE_ID +"=?";
+        String[] selectionArgs=new String[]{selfId,friendId};
+
+        Cursor cursor=db.query(MsgEntry.TABLE_NAME,null,selection,selectionArgs,null,null,MsgEntry.TIME);
+        Log.i(TAG, "queryMessages() cursor.count="+cursor.getCount());
+        //如果游标为空（查找失败）或查到的信息数位0，返回null
+        if(cursor==null || cursor.getCount()==0){
+            Log.i(TAG, "DatabaseUtil queryMessage() 异常：游标为空");
+            return list;
+        }
+
+        cursor.moveToFirst();
+        while(!cursor.isAfterLast()){
+            ChatMessage message=new ChatMessage();
+            message.setSendId(cursor.getInt(cursor.getColumnIndex(MsgEntry.SEND_ID)));
+            message.setReceiveId(cursor.getInt(cursor.getColumnIndex(MsgEntry.RECEVICE_ID)));
+            message.setType(cursor.getInt(cursor.getColumnIndex(MsgEntry.TYPE)));
+            message.setContent(cursor.getString(cursor.getColumnIndex(MsgEntry.CONTENT)));
+            message.setTime(cursor.getString(cursor.getColumnIndex(MsgEntry.TIME)));
+            message.setDirection(cursor.getInt(cursor.getColumnIndex(MsgEntry.DIRECTION)));
+            list.add(message);
+            cursor.moveToNext();
+			Log.i(TAG, "queryMessages()：查到一条消息"+message);
+        }
+
+        cursor.close();
+        db.close();
+        return list;
+    }
+
+    public boolean deleteAllMessages(String self, String friend){
+        boolean result=false;
+        SQLiteDatabase db=getWritableDatabase();
+
+        db.beginTransaction();
+        try{
+            //删除同某好友的全部聊天消息
+            String where= MsgEntry.SEND_ID+"=? and "+MsgEntry.RECEVICE_ID+"=?";
+            String[] whereArgs={self, friend};
+            int number=db.delete(MsgEntry.TABLE_NAME, where, whereArgs);
+            if(number!=0){
+                Log.i(TAG, "deleteAllMessages() 删除全部聊天消息成功");
+            }else{
+                Log.i(TAG, "deleteAllMessages() 删除全部聊天消息失败");
+            }
+
+            //更新friend表的type,content,time字段
+            ChatMessage message=new ChatMessage();
+            message.setSendId(Integer.parseInt(self));
+            message.setReceiveId(Integer.parseInt(friend));
+
+            ContentValues values=new ContentValues();
+            values.put(MsgEntry.TYPE, message.getType());
+            values.put(MsgEntry.CONTENT, message.getContent());
+            values.put(MsgEntry.TIME, message.getTime());
+            String where2=FriendsEntry.USER_ID+"="+message.getSendId()+" and "+FriendsEntry.FRIEND_ID+"="+message.getReceiveId();
+            int number2=db.update(FriendsEntry.TABLE_NAME, values, where2, null);
+            if(number2!=0){
+                result = true;
+                Log.i(TAG, "deleteAllMessages() 更新friend表成功");
+            }else{
+                result = false;
+                Log.i(TAG, "deleteAllMessages() 更新friend表失败");
+            }
+
+            db.setTransactionSuccessful();
+        }finally{
+            db.endTransaction();
+            db.close();
+        }
+        return result;
+    }
+
+
 
     // 插入一个好友信息
     public void insertFriend(ContentValues values) {

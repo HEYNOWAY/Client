@@ -99,10 +99,10 @@ public class ILoginPresenterCompl implements ILoginPresenter {
                     user.setUserID(userId);
                     String userName = recive_msg.getUser().getUesrName();
                     user.setUserName(userName);
+
                     BaseActivity.setSelf(user);
                     BaseActivity.sendEmptyMessage(Config.LOGIN_SUCCESS);
                     Log.i(TAG,"handlogin()...finished");
-
                 } else {
                     BaseActivity.sendEmptyMessage(Config.LOGIN_FAILED);
                     Log.i(TAG,"handlogin()...failed,reason:"+recive_msg.getReceiveResult());

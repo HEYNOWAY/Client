@@ -7,8 +7,5 @@ import com.example.luos.cst_project.Model.ChatMessage;
  */
 
 public interface IChatPresenter extends IPresenter {
-
-    boolean sendChatMessage(int receiveId, String content, String time);
-
-    void saveMessageToDb(ChatMessage message);
+    void doSendMessage(String text, int friendID);
 }
