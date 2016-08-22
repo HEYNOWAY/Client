@@ -38,16 +38,12 @@ public class NetWork extends Thread {
     private boolean isConnected;
     private List<IPresenter> mPresenterList = new ArrayList<>();
     private BlockingDeque<DataFrame.Msg> dataQueue = new LinkedBlockingDeque<>();
-    private DataFrame.Msg recive_msg;
 
     private final String ConstHeader = "142857";
     private final int ConstHeaderLength = 6;
     private final int ConstMsgLength = 4;
 
 
-    public DataFrame.Msg getMsg(){
-        return recive_msg;
-    }
     public synchronized static NetWork getInstance() {
         Log.i(TAG, "getInstance()....");
         if (instance == null) {
@@ -100,13 +96,17 @@ public class NetWork extends Thread {
     }
 
     private void read() {
+        byte[] buffer = new byte[1024 * 4];
+        byte[] tempBuf = new byte[0];
         while (isConnected) {
             try {
                 Log.i(TAG, "reciveMsg()...start recive messages");
-                byte[] buffer = new byte[1024 * 4];
                 int len = dis.read(buffer);
                 if (len != -1) {
-                    Depacket(buffer);
+                    byte[] combined = new byte[tempBuf.length + len];
+                    System.arraycopy(tempBuf,0,combined,0,tempBuf.length);
+                    System.arraycopy(buffer,0,combined,tempBuf.length,len);
+                    tempBuf = Depacket(buffer);
                 }
             }catch (InvalidProtocolBufferException e1) {
                 e1.printStackTrace();
@@ -148,8 +148,8 @@ public class NetWork extends Thread {
         int len = databuf.length;
         int i=0;
         for(; i < len; i++){
-            //判断长度是否小于 Header+MsgLenth 的长度，小于则没有接收到实际信息
-            if(len < i + ConstHeaderLength ){
+            //判断长度是否小于 Header 的长度
+            if(len < i + ConstHeaderLength + ConstMsgLength ){
                 break;
             }
             //判断包头是否等于Header
@@ -166,15 +166,14 @@ public class NetWork extends Thread {
                 byte[] data = Arrays.copyOfRange(databuf,i+ConstHeaderLength+ConstMsgLength,
                         i+ConstHeaderLength+ConstMsgLength+msgLenth);
                 try {
-                    recive_msg = DataFrame.Msg.parseFrom(data);
+                    DataFrame.Msg recive_msg = DataFrame.Msg.parseFrom(data);
                     dataQueue.put(recive_msg);
                 } catch (InvalidProtocolBufferException e) {
                     e.printStackTrace();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                //从当前的位置开始，再判断解析一次
-                i = i+ConstHeaderLength+ConstMsgLength+msgLenth-1;
+
             }
         }
         if(i==len){
